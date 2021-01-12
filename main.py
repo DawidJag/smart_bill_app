@@ -6,6 +6,9 @@ from checkbox_matrix import check_box_matrix
 from payers_list import payers_list
 from app_engine import Settlement, Receipt
 from pdf_creator import save_report
+from pathlib import Path
+import os.path
+from os import listdir
 
 from kivy.app import App
 from kivy.lang import Builder
@@ -721,6 +724,12 @@ sm.current = "main"
 
 class MyMainApp(App):
     def build(self):
+        data_dir = getattr(self, 'user_data_dir')
+        parent_dir = os.path.abspath(os.path.join(data_dir, os.pardir))
+        print('User data: => ', data_dir)
+        print('Parent directory: => ', parent_dir)
+        print('Print parent files: =>', listdir(parent_dir))
+
         return sm
 
 
