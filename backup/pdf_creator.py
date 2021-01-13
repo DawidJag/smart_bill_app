@@ -1,8 +1,11 @@
 from fpdf import FPDF
 from datetime import date
 import os
+import subprocess
+from pathlib import Path
 import os.path
-# from android.storage import primary_external_storage_path
+from os import listdir
+from android.storage import primary_external_storage_path
 
 
 class PDF(FPDF):
@@ -75,12 +78,9 @@ def save_report(settlement_name, payments):
 
     # saving report
     today = str(date.today())
-    file_name = 'report_' + settlement_name + '_' + today + '.pdf'
-
-    # TO BE UNCOMMENTED BEFORE COMPILATION
-    # primary_storage = primary_external_storage_path()
-    # PATH = os.path.join(primary_storage, 'Sm@rt_Bill/reports')
-    PATH = './reports'
+    file_name = 'report_' + settlement_name + '_' + today + '.pdf'    
+    primary_storage = primary_external_storage_path()
+    PATH = os.path.join(primary_storage, 'Sm@rt_Bill/reports')
 
     file = os.path.join(PATH, file_name)
 

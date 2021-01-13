@@ -6,13 +6,14 @@ from checkbox_matrix import check_box_matrix
 from payers_list import payers_list
 from app_engine import Settlement, Receipt
 from pdf_creator import save_report
-from pathlib import Path
 import os.path
 from os import listdir
+from os.path import dirname
+# from android.storage import primary_external_storage_path
 
 from kivy.app import App
 from kivy.lang import Builder
-from kivy.uix.screenmanager import ScreenManager, Screen
+from kivy.uix.screenmanager import ScreenManager, Screen, NoTransition, CardTransition
 from kivy.properties import ObjectProperty
 from kivy.uix.label import Label
 from kivy.uix.boxlayout import BoxLayout
@@ -21,7 +22,8 @@ from kivy.uix.gridlayout import GridLayout
 from kivy.uix.recycleview import RecycleView
 from kivy.uix.popup import Popup
 from kivy.core.window import Window
-# AAAAAAAAAAAAAAAAAAAAAAAAA
+from kivy.utils import platform
+
 
 # from kivy.uix.button import Button
 from kivy.uix.scrollview import ScrollView
@@ -53,14 +55,17 @@ class MainWindow(Screen):
             self.items.append(temp_dict)
 
         # self.sett_list.bind(minimum_height=self.sett_list.setter('height'))
-        recycle_view = RV(items=self.items)
-        self.sett_list.add_widget(recycle_view)
+        self.recycle_view = RV(items=self.items)
+
+        self.sett_list.add_widget(self.recycle_view)
+
+
 
     def addSettBtn(self):
         AddSettlementWindow.s_name = ""
         AddSettlementWindow.part_list = ""
         AddSettlementWindow.prev_screen = "main"
-        sm.current = "add_settl"
+
 
     # settlement's list
     def addRecBtn(self, settlement):
@@ -79,18 +84,16 @@ class MainWindow(Screen):
         AddReceiptWindow.s_name = settlement
         AddReceiptWindow.part_list = str(participants.split(','))
         AddReceiptWindow.prev_screen = "main"
-        sm.current = "add_receipt"
 
     def editSettBtn(self, settlement):
         AddSettlementWindow.s_name = settlement
         AddSettlementWindow.part_list = db.get_settlement_participants(settlement)
         AddSettlementWindow.prev_screen = "main"
-        sm.current = 'add_settl'
+
 
     def delSettBtn(self, settlement):
         DelSettConfWindow.s_name = settlement
         DelSettConfWindow.prev_screen = "main"
-        sm.current = 'del_conf_sett'
 
 
 class DelSettConfWindow(Screen):
@@ -102,7 +105,6 @@ class DelSettConfWindow(Screen):
 
     def delSett(self):
         db.delete_settlement(self.sett_name.text)
-        sm.current = 'main'
 
 
 class DelRecConfWindow(Screen):
@@ -117,7 +119,7 @@ class DelRecConfWindow(Screen):
 
     def delRec(self):
         db.delete_record(self.s_name, self.r_name)
-        sm.current = 'add_settl'
+        screen_manager.current = 'add_settl'
 
 
 class ReportsWindow(Screen):
@@ -169,7 +171,6 @@ def run_settlement(settlement_name):
             settlement.add_receipt_to_settlement(receipt)
 
     report = settlement.final_payments_report()
-    # settl_report(report)        # popup window with final report
     return report
 
 
@@ -179,7 +180,7 @@ def settl_report(payments):  # payments => dict
     layout_popup.bind(minimum_height=layout_popup.setter('height'))
 
     for payer, transfers in payments.items():
-        box = BoxLayout(orientation='vertical', padding=[0, 10], spacing=10, size_hint_y=None)
+        box = BoxLayout(orientation='vertical', spacing=10, size_hint_y=None)   #padding=[0, 10]
         layout_popup.add_widget(box)
         box.add_widget(Label(text= str(payer) + ' should make below transfers:\n'))
 
@@ -208,7 +209,8 @@ class AddSettlementWindow(Screen):
     prev_screen = ""
 
     def on_enter(self):
-        self.settl_name.text = self.s_name
+        app = App.get_running_app()
+        app.root.ids.settl_name.text = self.s_name
         self.particip_list.text = self.part_list  # string
         self.rec_list.clear_widgets()
         self.show_rec_RV()
@@ -239,12 +241,6 @@ class AddSettlementWindow(Screen):
         recycle_view = RV_rec(items=self.items)
         self.rec_list.add_widget(recycle_view)
 
-    # receipt's list
-    def addRecBtnaaaaaaaaaaaaaaaaaa(self, receipt):  # not used at the moment
-        # AddReceiptWindow.s_name = settlement
-        # AddReceiptWindow.prev_screen = "main"
-        # sm.current = "add_receipt"
-        pass
 
     def editRecBtn(self, receipt):
         record = db.get_record_data(self.s_name, receipt)
@@ -259,7 +255,6 @@ class AddSettlementWindow(Screen):
         AddReceiptWindow.r_category = record['category']
         AddReceiptWindow.r_remarks = record['remarks']
         AddReceiptWindow.prev_screen = "add_settl"
-        sm.current = 'add_receipt'
 
         # print('edit pressed: ' + str(AddReceiptWindow.editPressed))
 
@@ -267,8 +262,6 @@ class AddSettlementWindow(Screen):
         DelRecConfWindow.s_name = self.s_name
         DelRecConfWindow.r_name = receipt
         DelRecConfWindow.prev_screen = "add_settl"
-        sm.current = 'del_conf_rec'
-
     # ****************************************
 
     def reset(self):
@@ -302,19 +295,16 @@ class AddSettlementWindow(Screen):
             AddReceiptWindow.r_exp_split = array_converted
 
         AddReceiptWindow.prev_screen = "add_settl"
-        sm.current = "add_receipt"
 
     def addSettleBtn(self):
         if self.settl_name.text != "" and self.particip_list.text != "":
             db.add_record(settlement=self.settl_name.text, participants=str(self.particip_list.text.split(',')))
             self.reset()
-            sm.current = "main"
         else:
             invalidForm()
 
     def cancelBtn(self):
         self.reset()
-        sm.current = "main"
 
 
 class AddReceiptWindow(Screen):
@@ -377,7 +367,9 @@ class AddReceiptWindow(Screen):
             array = np.concatenate((items, zeros, checks), axis=1)
             self.r_exp_split = str(array.tolist())
 
-        screen = sm.get_screen(screen_name)
+        app = App.get_running_app()
+        screen_manager = app.root.ids['screen_manager']
+        screen = screen_manager.get_screen(screen_name)     # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!111
 
         ExpSplitWindow.input_exp_matrix = self.r_exp_split
         ExpSplitWindow.show_exp_split(screen, rows, cols, labels)
@@ -391,7 +383,9 @@ class AddReceiptWindow(Screen):
             for participant in ast.literal_eval(self.part_list):
                 r_payments[participant] = 0
 
-        screen = sm.get_screen('payers_list')
+        app = App.get_running_app()
+        screen_manager = app.root.ids['screen_manager']
+        screen = screen_manager.get_screen('payers_list')
         PayersWindow.show_pay_list(screen, r_payments)
 
         AddReceiptWindow.r_name = self.rec_name.text
@@ -402,7 +396,6 @@ class AddReceiptWindow(Screen):
 
     def cancelBtn(self):
         self.reset()
-        sm.current = self.prev_screen
 
     def addRecBtn(self):
         # print('edit button :' + str(AddReceiptWindow.editPressed))
@@ -428,7 +421,9 @@ class AddReceiptWindow(Screen):
                           remarks=self.remarks.text,
                           payments=str(self.r_payments), exp_split_matrix=self.r_exp_split)
             # self.reset()
-            sm.current = self.prev_screen
+            app = App.get_running_app()
+            screen_manager = app.root.ids['screen_manager']
+            screen_manager.current = self.prev_screen
         else:
             invalidForm()
 
@@ -440,7 +435,9 @@ class AddReceiptWindow(Screen):
                              date=self.date.text, category=self.category.text, remarks=self.remarks.text,
                              payments=str(self.r_payments), exp_split_matrix=self.r_exp_split)
             # self.reset()
-            sm.current = self.prev_screen
+            app = App.get_running_app()
+            screen_manager = app.root.ids['screen_manager']
+            screen_manager.current = self.prev_screen
         else:
             invalidForm()
 
@@ -459,7 +456,7 @@ class PayersWindow(Screen):
 
     def __init__(self, **kwargs):
         super(PayersWindow, self).__init__(**kwargs)
-        self.pay_list.bind(minimum_height=self.pay_list.setter('height'))
+        #self.pay_list.bind(minimum_height=self.pay_list.setter('height'))
 
     def show_pay_list(self, payments):
         self.p_list = payers_list(payments=payments)
@@ -476,12 +473,13 @@ class ExpSplitWindow(Screen):
     r_date = ""
     r_category = ""
     r_remarks = ""
-    grid = ObjectProperty(None)
+    #grid = ObjectProperty(None)
+    grid = GridLayout(cols=1)
     input_exp_matrix = ""  # string
 
     def __init__(self, **kwargs):
         super(ExpSplitWindow, self).__init__(**kwargs)
-        self.grid.bind(minimum_height=self.grid.setter('height'))
+        #self.grid.bind(minimum_height=self.grid.setter('height'))
 
     def show_exp_split(self, rows, cols, labels):
         self.expenses_grid = check_box_matrix(rows_no=rows, cols_no=cols, labels=labels,
@@ -500,6 +498,7 @@ class ExpSplitWindow(Screen):
         AddReceiptWindow.r_category = self.r_category
         AddReceiptWindow.r_remarks = self.r_remarks
         AddReceiptWindow.editPressed = 1
+        self.grid.clear_widgets()
 
     def CancelBtn(self):
         AddReceiptWindow.s_name = self.s_name
@@ -508,6 +507,7 @@ class ExpSplitWindow(Screen):
         AddReceiptWindow.r_date = self.r_date
         AddReceiptWindow.r_category = self.r_category
         AddReceiptWindow.r_remarks = self.r_remarks
+        self.grid.clear_widgets()
 
 
 def invalidForm():
@@ -549,16 +549,19 @@ Builder.load_string('''
         text: 'Add Receipt'
         on_release:
             root.add_rec(root.rv_add_rec)
+            app.root.ids['screen_manager'].current = 'add_receipt'
     Button:
         id: col_4
         text: 'Edit'
         on_release:
             root.edit_sett(root.rv_edit_sett)
+            app.root.ids['screen_manager'].current = 'add_settl'
     Button:
         id: col_5
         text: 'Delete'
         on_release:
             root.delete_sett(root.rv_del_sett)
+            app.root.ids['screen_manager'].current = 'del_conf_sett'
 
 <RV>:
     viewclass: 'MainTable'
@@ -607,21 +610,18 @@ Builder.load_string('''
     Label:
         id: col_2_rec
         text: root.rv_rec_amount
-    # Button:
-    #     id: col_3_rec
-    #     text: 'blank'
-    #     #on_release:
-    #         #root.add_rec(root.rv_add_rec)
     Button:
         id: col_4_rec
         text: 'Edit'
         on_release:
             root.edit_rec(root.rv_edit_rec)
+            app.root.ids['screen_manager'].current = "add_receipt"
     Button:
         id: col_5_rec
         text: 'Delete'
         on_release:
             root.delete_rec(root.rv_del_rec)
+            app.root.ids['screen_manager'].current = "del_conf_rec"
 
 <RV_rec>:
     viewclass: 'MainTable_rec'
@@ -651,12 +651,10 @@ class MainTable_rep(BoxLayout):
     def pdfBtn(self, data):
         print('PDF report')
         ReportsWindow.pdfReport(ReportsWindow, data)
-        # AddSettlementWindow.editRecBtn(AddSettlementWindow, data)
 
     def showBtn(self, data):  # dodac nazwę settlement
         print('Show report')
         ReportsWindow.show(ReportsWindow, data)
-        # AddSettlementWindow.delRecBtn(AddSettlementWindow, data)
 
 
 Builder.load_string('''
@@ -703,35 +701,47 @@ class RV_rep(RecycleView):
 # ********************
 
 
-class WindowManager(ScreenManager):
-    pass
+# class WindowManager(ScreenManager):
+#     pass
 
+# !!!!!!!!!!!!!
+# kv = Builder.load_file("smart_bill.kv")
 
-kv = Builder.load_file("my.kv")
-
-sm = WindowManager()
+# sm = WindowManager()
 db = DataBase("baza_danych2_test.txt")
 
-screens = [MainWindow(name="main"), PayersWindow(name='payers_list'), ExpSplitWindow(name="expense_split"),
-           ReportsWindow(name='reports'), AddSettlementWindow(name='add_settl'), AddReceiptWindow(name='add_receipt'),
-           DelSettConfWindow(name='del_conf_sett'), DelRecConfWindow(name='del_conf_rec')]
+# screens = [MainWindow(name="main"), PayersWindow(name='payers_list'), ExpSplitWindow(name="expense_split"),
+#            ReportsWindow(name='reports'), AddSettlementWindow(name='add_settl'), AddReceiptWindow(name='add_receipt'),
+#            DelSettConfWindow(name='del_conf_sett'), DelRecConfWindow(name='del_conf_rec')]
+#
+# for screen in screens:
+#     sm.add_widget(screen)
+#
+# sm.current = "main"
 
-for screen in screens:
-    sm.add_widget(screen)
-
-sm.current = "main"
 
 
-class MyMainApp(App):
+
+GUI = Builder.load_file("smart_bill.kv")
+
+class smart_billApp(App):
+
     def build(self):
-        data_dir = getattr(self, 'user_data_dir')
-        parent_dir = os.path.abspath(os.path.join(data_dir, os.pardir))
-        print('User data: => ', data_dir)
-        print('Parent directory: => ', parent_dir)
-        print('Print parent files: =>', listdir(parent_dir))
+        # TO BE UNCOMMENTED BEFORE COMPILATION
+        # if platform == 'android':
+        #     from android.permissions import request_permissions, Permission
+        #     request_permissions([Permission.READ_EXTERNAL_STORAGE, Permission.WRITE_EXTERNAL_STORAGE])
+        #
+        # primary_storage = primary_external_storage_path()
+        #
+        # PATH = os.path.join(primary_storage, 'Sm@rt_Bill/reports')
+        # os.makedirs(PATH, exist_ok = True)
 
-        return sm
+        return GUI
+
+    def on_start(self):
+        self.root.ids['main'].on_enter()
 
 
 if __name__ == "__main__":
-    MyMainApp().run()
+    smart_billApp().run()
