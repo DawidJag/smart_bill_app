@@ -97,7 +97,7 @@ GridLayout:
                     on_release:
                         root.ids.del_conf_sett.delSett()
                         root.ids['screen_manager'].transition.direction = "down"
-                        app.root.ids['screen_manager'].current = "add_settl"
+                        app.root.ids['screen_manager'].current = "main"
 
 
                 RoundedButton:
@@ -145,7 +145,7 @@ GridLayout:
                     on_release:
                         root.ids.del_conf_rec.delRec()
                         root.ids['screen_manager'].transition.direction = "down"
-                        app.root.ids['screen_manager'].current = "main"
+                        app.root.ids['screen_manager'].current = "add_settl"
 
 
                 RoundedButton:
@@ -427,7 +427,7 @@ GridLayout:
                         on_release:
                             root.ids['screen_manager'].transition.direction = "right"
                             app.root.ids['add_receipt'].cancelBtn()
-                            app.root.ids['screen_manager'].current = "main"
+                            app.root.ids['screen_manager'].current = self.root.prev_screen
 
                     RoundedButton:
                         text: 'Add / Save'
@@ -532,18 +532,15 @@ GridLayout:
                         app.root.ids['expense_split'].OKBtn()
                         root.ids['screen_manager'].transition.direction = "right"
                         app.root.ids['screen_manager'].current = "add_receipt"
-                        app.root.ids['expense_split'].ids.grid.clear_widgets()
-
 
                 RoundedButton:
                     text: 'Cancel'
                     pos_hint: {"right":0.95, "top":0.1}
                     size_hint: 0.35, 0.1
                     on_release:
-                        #app.root.ids['expense_split'].CancelBtn()
+                        app.root.ids['expense_split'].CancelBtn()
                         root.ids['screen_manager'].transition.direction = "right"
                         app.root.ids['screen_manager'].current = "add_receipt"
-                        #app.root.ids['expense_split'].ids.grid.clear_widgets()
 
 
 
