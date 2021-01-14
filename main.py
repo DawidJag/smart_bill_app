@@ -182,27 +182,32 @@ def run_settlement(settlement_name):
 
 
 def settl_report(payments):  # payments => dict
-    layout_popup = GridLayout(cols=1, spacing=20, size_hint_y=None)
+    # dodac wyliczanie defualt height
+    default_height = 50
+    layout_popup = GridLayout(cols=1, spacing=5, size_hint_y=None, row_default_height=default_height, row_force_default=True)         # gridlayout do dodania do scrollview
     layout_popup.bind(minimum_height=layout_popup.setter('height'))
 
     for payer, transfers in payments.items():
-        box = BoxLayout(orientation='vertical', spacing=10, size_hint_y=None)   #padding=[0, 10]
-        layout_popup.add_widget(box)
-        box.add_widget(Label(text= str(payer) + ' should make below transfers:\n'))
+        # box = BoxLayout(orientation='vertical', spacing=10, size_hint_y='200dp')            # size_hint_y=Non           # box dla danego płacącego
+        # layout_popup.add_widget(box)
+        # box.add_widget(Label(text= str(payer) + ' should make below transfers:\n'))                 # etykieta kto płaci
+
+        layout_popup.add_widget(Label(text=str(payer) + ' should make below transfers:'))
 
         for receiver, amount in transfers.items():
-            inside_box = GridLayout(cols=2)
+            inside_box = GridLayout(cols=2, spacing=10)                                             # linia płatności
             label_rec = Label(text=receiver + ': ')
             label_amt = Label(text=str(amount))
             inside_box.add_widget(label_rec)
             inside_box.add_widget(label_amt)
 
-            box.add_widget(inside_box)
+            # box.add_widget(inside_box)
+            layout_popup.add_widget(inside_box)
 
-    screen1 = ScrollView(size_hint=(1, 0.9), size=(Window.width, Window.height))
+    screen1 = ScrollView(size=(Window.width, Window.height))        # size_hint=(1, 0.8),
     screen1.add_widget(layout_popup)
 
-    pop = Popup(title='Payments', content=screen1, size_hint=(1, 1))
+    pop = Popup(title='Payments', content=screen1, size_hint=(0.9, 0.9))
     pop.open()
 
 
@@ -618,8 +623,6 @@ class RV(RecycleView):
         self.data = [{'rv_sett_name': str(x['col_1']), 'rv_sett_amount': str(x['col_2']),
                       'rv_add_rec': str(x['col_3']), 'rv_edit_sett': str(x['col_4']), 'rv_del_sett': str(x['col_5'])}
                      for x in self.items]
-
-
 # ********************
 
 # ********************* Recycle view - receipts
@@ -679,18 +682,14 @@ class RV_rec(RecycleView):
                       'rv_add_rec': str(x['col_3_rec']), 'rv_edit_rec': str(x['col_4_rec']),
                       'rv_del_rec': str(x['col_5_rec'])}
                      for x in self.items]
-
-
 # ********************
 
 class MainTable_rep(BoxLayout):
 
     def pdfBtn(self, data):
-        print('PDF report')
         ReportsWindow.pdfReport(ReportsWindow, data)
 
     def showBtn(self, data):  # dodac nazwę settlement
-        print('Show report')
         ReportsWindow.show(ReportsWindow, data)
 
 
