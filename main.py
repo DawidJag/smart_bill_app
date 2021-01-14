@@ -16,6 +16,7 @@ from kivy.lang import Builder
 from kivy.uix.screenmanager import ScreenManager, Screen, NoTransition, CardTransition
 from kivy.properties import ObjectProperty
 from kivy.uix.label import Label
+from kivy.uix.button import Button
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.gridlayout import GridLayout
@@ -119,7 +120,12 @@ class DelRecConfWindow(Screen):
 
     def delRec(self):
         db.delete_record(self.s_name, self.r_name)
+        app = App.get_running_app()
+        screen_manager = app.root.ids['screen_manager']
         screen_manager.current = 'add_settl'
+
+class UpdateSettConfWindow(Screen):
+    pass
 
 
 class ReportsWindow(Screen):
@@ -207,6 +213,9 @@ class AddSettlementWindow(Screen):
     part_list = ""
     s_name = ""
     prev_screen = ""
+    s_name_old = ""
+    part_list_old = ""
+
 
     def on_enter(self):
         app = App.get_running_app()
@@ -215,6 +224,8 @@ class AddSettlementWindow(Screen):
         self.rec_list.clear_widgets()
         self.show_rec_RV()
         self.s_name_old = self.s_name
+        self.part_list_old = self.part_list
+        # print(self.s_name)
 
     # ******************* Receipts list
     def show_rec_RV(self):  # items
@@ -264,18 +275,28 @@ class AddSettlementWindow(Screen):
         DelRecConfWindow.prev_screen = "add_settl"
     # ****************************************
 
-    def reset(self):
-        self.particip_list.text = ''
-        self.settl_name.text = ''
+    # def updateBtn(self):
+    #     receipts_list = db.get_receipts_list(self.s_name_old)
+    #     self.s_name = self.settl_name.text
+    #     self.part_list = self.particip_list.text
+    #     for receipt in receipts_list:
+    #         db.update_record(old_settlement=self.s_name_old, new_settlement=self.s_name,
+    #                          participants=str(self.part_list.split(',')),
+    #                          old_receipt=receipt, new_receipt=receipt)
 
-    def updateBtn(self):
+    def updateSett(self):
         receipts_list = db.get_receipts_list(self.s_name_old)
-        self.s_name = self.settl_name.text
-        self.part_list = self.particip_list.text
+        AddSettlementWindow.s_name = self.settl_name.text
+        AddSettlementWindow.part_list = self.particip_list.text
         for receipt in receipts_list:
             db.update_record(old_settlement=self.s_name_old, new_settlement=self.s_name,
                              participants=str(self.part_list.split(',')),
                              old_receipt=receipt, new_receipt=receipt)
+
+    def updateDismiss(self):
+        self.particip_list.text = self.part_list_old
+        self.settl_name.text = self.s_name_old
+
 
     def addRecBtn(self):
         AddReceiptWindow.s_name = self.settl_name.text
@@ -296,15 +317,22 @@ class AddSettlementWindow(Screen):
 
         AddReceiptWindow.prev_screen = "add_settl"
 
-    def addSettleBtn(self):
+    def addSettleBtn(self):         # dodać zapisywanie, jeśli nic sie nie zmieniło
         if self.settl_name.text != "" and self.particip_list.text != "":
             db.add_record(settlement=self.settl_name.text, participants=str(self.particip_list.text.split(',')))
+            print(self.s_name)
+            print(AddSettlementWindow.s_name)
             self.reset()
         else:
             invalidForm()
 
     def cancelBtn(self):
         self.reset()
+
+
+    def reset(self):
+        self.particip_list.text = ''
+        self.settl_name.text = ''
 
 
 class AddReceiptWindow(Screen):
@@ -369,7 +397,7 @@ class AddReceiptWindow(Screen):
 
         app = App.get_running_app()
         screen_manager = app.root.ids['screen_manager']
-        screen = screen_manager.get_screen(screen_name)     # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!111
+        screen = screen_manager.get_screen(screen_name)
 
         ExpSplitWindow.input_exp_matrix = self.r_exp_split
         ExpSplitWindow.show_exp_split(screen, rows, cols, labels)
@@ -396,15 +424,24 @@ class AddReceiptWindow(Screen):
 
     def cancelBtn(self):
         self.reset()
+        app = App.get_running_app()
+        screen_manager = app.root.ids['screen_manager']
+        screen_manager.current = self.prev_screen
 
     def addRecBtn(self):
         # print('edit button :' + str(AddReceiptWindow.editPressed))
         if AddReceiptWindow.editPressed:
             self.dbUpdateRec()
             self.reset()
+            app = App.get_running_app()
+            screen_manager = app.root.ids['screen_manager']
+            screen_manager.current = self.prev_screen
         else:
             self.dbAddRec()
             self.reset()
+            app = App.get_running_app()
+            screen_manager = app.root.ids['screen_manager']
+            screen_manager.current = self.prev_screen
 
     def dbAddRec(self):
         if not self.r_exp_split:  # self.r_exp_split => string
