@@ -43,12 +43,13 @@ GridLayout:
 
                 Label:
                     text: 'Smart Bill'
-                    font_size: 48
+                    font_size: '48sp'
                     pos_hint: {"x":0.1, "top":1}
                     size_hint: 0.8, 0.2
 
                 RoundedButton:
                     text: 'Reports'
+                    font_size: '24sp'
                     pos_hint: {"x":0.1, "top":0.8}
                     size_hint: 0.8, 0.09
                     on_release:
@@ -57,6 +58,7 @@ GridLayout:
 
                 RoundedButton:
                     text: 'Add settlement'
+                    font_size: '24sp'
                     pos_hint: {"x":0.1, "top":0.7}
                     size_hint: 0.8, 0.09
                     on_release:
@@ -71,7 +73,7 @@ GridLayout:
                     halign: 'left'
                     valign: 'middle'
                     text_size: self.size
-                    font_size: 36
+                    font_size: '24sp'
                     pos_hint: {"x":0.1, "top":0.58}
                     size_hint: 0.8, 0.1
 
@@ -99,16 +101,19 @@ GridLayout:
 
                 Label:
                     id: set1_name
+                    font_size: '24sp'
                     pos_hint: {"x":0.1, "top":0.9}
                     size_hint: 0.8, 0.15
 
                 Label:
                     text: 'Would you like to delete settlement?'
+                    font_size: '24sp'
                     pos_hint: {"x":0.1, "top":0.8}
                     size_hint: 0.8, 0.15
 
                 RoundedButton:
                     text: 'Confirm'
+                    font_size: '24sp'
                     pos_hint: {"x":0.1, "top":0.7}
                     size_hint: 0.4, 0.15
                     on_release:
@@ -119,6 +124,7 @@ GridLayout:
 
                 RoundedButton:
                     text: 'Cancel'
+                    font_size: '24sp'
                     pos_hint: {"x":0.5, "top":0.7}
                     size_hint: 0.4, 0.15
                     on_release:
@@ -152,11 +158,13 @@ GridLayout:
 
                 Label:
                     text: 'Would you like to delete receipt?'
+                    font_size: '24sp'
                     pos_hint: {"x":0.1, "top":0.8}
                     size_hint: 0.8, 0.15
 
                 RoundedButton:
                     text: 'Confirm'
+                    font_size: '24sp'
                     pos_hint: {"x":0.1, "top":0.7}
                     size_hint: 0.4, 0.15
                     on_release:
@@ -167,6 +175,7 @@ GridLayout:
 
                 RoundedButton:
                     text: 'Cancel'
+                    font_size: '24sp'
                     pos_hint: {"x":0.5, "top":0.7}
                     size_hint: 0.4, 0.15
                     on_release:
@@ -188,11 +197,13 @@ GridLayout:
 
                 Label:
                     text: 'Would you like to update settlement?'
+                    font_size: '24sp'
                     pos_hint: {"x":0.1, "top":0.8}
                     size_hint: 0.8, 0.15
 
                 RoundedButton:
                     text: 'Confirm'
+                    font_size: '24sp'
                     pos_hint: {"x":0.1, "top":0.7}
                     size_hint: 0.4, 0.15
                     on_release:
@@ -202,6 +213,7 @@ GridLayout:
 
                 RoundedButton:
                     text: 'Cancel'
+                    font_size: '24sp'
                     pos_hint: {"x":0.5, "top":0.7}
                     size_hint: 0.4, 0.15
                     on_release:
@@ -237,6 +249,7 @@ GridLayout:
 
                 RoundedButton:
                     text: 'Back'
+                    font_size: '24sp'
                     pos_hint: {"x":0.6, "top": 0.15}
                     size_hint: 0.29, 0.09
                     on_release:
@@ -279,7 +292,7 @@ GridLayout:
 
                     TextInput:
                         id: settl_name
-                        text: 'rozliczenie'
+                        hint_text: 'Type name here, like "settlement no.1"'
                         multiline: False
                         pos_hint: {"x":0.4, "top":0.85}
                         size_hint: 0.5, 0.06
@@ -291,12 +304,14 @@ GridLayout:
 
                     TextInput:
                         id: particip_list
+                        hint_text: 'Type all people here, like "name1,name2,name3"'
                         multiline: False
                         pos_hint: {"x":0.4, "top":0.79}
                         size_hint: 0.5, 0.06
 
                     RoundedButton:
                         text: 'Update'
+                        font_size: '20sp'
                         pos_hint: {"x":0.4, "top":0.72}
                         size_hint: 0.50, 0.05
                         on_release:
@@ -309,6 +324,7 @@ GridLayout:
 
                     RoundedButton:
                         text: 'Add'
+                        font_size: '20sp'
                         pos_hint: {"x":0.4, "top":0.63}
                         size_hint: 0.50, 0.05
                         on_release:
@@ -331,6 +347,7 @@ GridLayout:
 
                     RoundedButton:
                         text: 'Back'
+                        font_size: '24sp'
                         pos_hint: {"x":0.1, "top":0.1}
                         size_hint: 0.39, 0.09
                         on_release:
@@ -341,6 +358,7 @@ GridLayout:
 
                     RoundedButton:
                         text: 'Add'
+                        font_size: '24sp'
                         pos_hint: {"x":0.5, "top":0.1}
                         size_hint: 0.39, 0.09
                         on_release:
@@ -399,6 +417,7 @@ GridLayout:
 
                     TextInput:
                         id: rec_name
+                        hint_text: 'Type unique name for receipt'
                         multiline: False
                         text: 'receipt name'
                         pos_hint: {"x":0.5, "top":0.75}
@@ -411,6 +430,7 @@ GridLayout:
 
                     TextInput:
                         id: amount
+                        hint_text: 'Type amount here, like "50,99"'
                         text: '5'
                         multiline: False
                         pos_hint: {"x":0.5, "top":0.7}
@@ -423,6 +443,7 @@ GridLayout:
 
                     TextInput:
                         id: date
+                        hint_text: 'Type date in format: YYYY-MM-DD'
                         multiline: False
                         text: '3'
                         pos_hint: {"x":0.5, "top":0.65}
@@ -435,6 +456,7 @@ GridLayout:
 
                     TextInput:
                         id: category
+                        hint_text: 'e.g. food, transport'
                         multiline: False
                         pos_hint: {"x":0.5, "top":0.6}
                         size_hint: 0.4, 0.05
@@ -458,6 +480,7 @@ GridLayout:
 
                     RoundedButton:
                         text: 'Edit'
+                        font_size: '20sp'
                         pos_hint: {"x":0.5, "top":0.5}
                         size_hint: 0.4, 0.05
                         on_release:
@@ -467,6 +490,7 @@ GridLayout:
 
                     RoundedButton:
                         text: 'Add expenses split'
+                        font_size: '20sp'
                         pos_hint: {"x":0.1, "top":0.4}
                         size_hint: 0.8, 0.09
                         on_release:
@@ -475,6 +499,7 @@ GridLayout:
 
                     RoundedButton:
                         text: 'Back'
+                        font_size: '24sp'
                         pos_hint: {"x":0.1, "top":0.15}
                         size_hint: 0.39, 0.09
                         on_release:
@@ -483,6 +508,7 @@ GridLayout:
 
                     RoundedButton:
                         text: 'Add / Save'
+                        font_size: '24sp'
                         pos_hint: {"x":0.5, "top":0.15}
                         size_hint: 0.39, 0.09
                         on_release:
@@ -508,6 +534,7 @@ GridLayout:
 
                 Label:
                     text: 'Fill in payers of this receipt:'
+                    font_size: '24sp'
                     pos_hint: {"x":0.1, "top":0.95}
                     size_hint: 0.39, 0.1
 
@@ -526,6 +553,7 @@ GridLayout:
 
                 RoundedButton:
                     text: 'Back'
+                    font_size: '24sp'
                     pos_hint: {"x":0.1, "top":0.1}
                     size_hint: 0.4, 0.09
                     on_release:
@@ -534,6 +562,7 @@ GridLayout:
 
                 RoundedButton:
                     text: 'Save'
+                    font_size: '24sp'
                     pos_hint: {"x":0.5, "top":0.1}
                     size_hint: 0.4, 0.09
                     on_release:
@@ -576,6 +605,7 @@ GridLayout:
 
                 RoundedButton:
                     text: 'Back'
+                    font_size: '24sp'
                     pos_hint: {"x":0.05, "top":0.1}
                     size_hint: 0.35, 0.1
                     on_release:
@@ -585,6 +615,7 @@ GridLayout:
 
                 RoundedButton:
                     text: 'Save'
+                    font_size: '24sp'
                     pos_hint: {"right":0.95, "top":0.1}
                     size_hint: 0.35, 0.1
                     on_release:
