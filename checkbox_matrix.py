@@ -25,13 +25,16 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.textinput import TextInput
 from kivy.properties import NumericProperty
 from kivy.properties import ObjectProperty
+from kivy.graphics import Color, Rectangle
+from kivy.graphics.instructions import Canvas
 
 from kivy.uix.scrollview import ScrollView
 from kivy.uix.screenmanager import Screen
 
-
 import numpy as np
 import ast
+
+
 
 class check_box_matrix(FloatLayout):
     # matrix = ObjectProperty(None)
@@ -45,6 +48,7 @@ class check_box_matrix(FloatLayout):
         self.rows_no = rows_no
         self.labels = ['Item', 'Amount'] + labels   # columns names
         self.result_matrix = np.empty(shape=(self.rows_no, self.cols_no), dtype=object)     # matrix returned with values from all children widgets
+
 
         # preparation of input_matrix
         items = ['item ' + str(x) for x in range(1, 11)]            # fixed no. of rows => 10
@@ -75,7 +79,7 @@ class check_box_matrix(FloatLayout):
         temp_array = name_array.copy()
 
         for label in self.labels:
-            self.popup_grid.add_widget(Label(text=label))
+            self.popup_grid.add_widget(Label(text=label, color=[0, 0, 0, 1]))
 
         for i in range(rows_no):
 
