@@ -101,7 +101,7 @@ class DelSettConfWindow(Screen):
     sett_name = ObjectProperty(None)
     s_name = ""
 
-    def on_enter(self):
+    def pre_enter(self):
         self.sett_name.text = self.s_name
 
     def delSett(self):
@@ -114,7 +114,7 @@ class DelRecConfWindow(Screen):
     s_name = ""
     r_name = ""
 
-    def on_enter(self):
+    def pre_enter(self):
         self.rec_name.text = self.r_name
         self.sett_name.text = self.s_name
 

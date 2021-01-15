@@ -8,6 +8,18 @@
             size: self.size
             radius: [10,]
 
+<BackgroundColor@Widget>
+    background_color: 1, 1, 1, 1
+    canvas.before:
+        Color:
+            rgba: root.background_color
+        Rectangle:
+            size: self.size
+            pos: self.pos
+
+<BackgroundLabel@Label+BackgroundColor>
+    background_color: 0, 0, 0, 0
+
 
 GridLayout:
     cols: 1
@@ -32,13 +44,13 @@ GridLayout:
                 Label:
                     text: 'Smart Bill'
                     font_size: 48
-                    pos_hint: {"x":0.1, "top":0.9}
-                    size_hint: 0.8, 0.15
+                    pos_hint: {"x":0.1, "top":1}
+                    size_hint: 0.8, 0.2
 
                 RoundedButton:
                     text: 'Reports'
                     pos_hint: {"x":0.1, "top":0.8}
-                    size_hint: 0.79, 0.09
+                    size_hint: 0.8, 0.09
                     on_release:
                         app.root.ids['screen_manager'].current = "reports"
 
@@ -46,22 +58,27 @@ GridLayout:
                 RoundedButton:
                     text: 'Add settlement'
                     pos_hint: {"x":0.1, "top":0.7}
-                    size_hint: 0.79, 0.09
+                    size_hint: 0.8, 0.09
                     on_release:
                         root.ids['screen_manager'].transition.direction = "left"
                         root.ids.main.addSettBtn()
                         app.root.ids['screen_manager'].current = "add_settl"
 
-                Label:
+                BackgroundLabel:
                     text: 'Settlements:'
+                    #color: 0.031, 0.792, 0.945, 0.73
+                    #background_color: 1, 1, 1, 1
+                    halign: 'left'
+                    valign: 'middle'
+                    text_size: self.size
                     font_size: 36
-                    pos_hint: {"x":0.1, "top":0.6}
-                    size_hint: 0.2, 0.1
+                    pos_hint: {"x":0.1, "top":0.58}
+                    size_hint: 0.8, 0.1
 
                 BoxLayout:
                     id: sett_list_main
-                    pos_hint: {"x":0.1, "top":0.5}
-                    size_hint: 0.8, 0.45
+                    pos_hint: {"x":0.1, "top":0.45}
+                    size_hint: 0.8, 0.4
 
         DelSettConfWindow:
             canvas.before:
@@ -209,8 +226,9 @@ GridLayout:
 
                 Label:
                     text: 'Reports'
-                    pos_hint: {"x":0.1, "top":0.9}
-                    size_hint: 0.79, 0.1
+                    font_size: 48
+                    pos_hint: {"x":0.1, "top":1}
+                    size_hint: 0.79, 0.2
 
                 BoxLayout:
                     id: sett_list_rep
@@ -247,8 +265,9 @@ GridLayout:
 
                 Label:
                     text: 'Add / Edit settlement'
-                    pos_hint: {"x":0.1, "top":0.95}
-                    size_hint: 0.8, 0.1
+                    font_size: 48
+                    pos_hint: {"x":0.1, "top":1}
+                    size_hint: 0.8, 0.2
 
                 FloatLayout:
                     cols: 2
@@ -355,8 +374,9 @@ GridLayout:
 
                 Label:
                     text: 'Add / Edit receipt'
-                    pos_hint: {"x":0.1, "top":0.9}
-                    size_hint: 0.8, 0.1
+                    font_size: 48
+                    pos_hint: {"x":0.1, "top":1}
+                    size_hint: 0.8, 0.2
 
                 FloatLayout:
                     cols: 2
