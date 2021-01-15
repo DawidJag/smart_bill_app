@@ -560,7 +560,9 @@ def invalidForm():
 
 
 # ********************* Recycle view - settlements
-class MainTable(BoxLayout):
+# class MainTable(BoxLayout):
+class MainTable(FloatLayout):
+
     def add_rec(self, data):
         MainWindow.addRecBtn(MainWindow, data)
 
@@ -573,34 +575,45 @@ class MainTable(BoxLayout):
 
 Builder.load_string('''
 <MainTable>:
-    orientation: 'horizontal'
+    #orientation: 'horizontal'
     rv_sett_name: 'col_1_text'                           
     rv_sett_amount: 'col_2_text'
     rv_add_rec: 'col_3_text'
     rv_edit_sett: 'col_4_text'
     rv_del_sett: 'col_5_text'
+    cols: 4
 
-    Label:
-        id: col_1
-        text: root.rv_sett_name
-    Label:
-        id: col_2
-        text: root.rv_sett_amount
+    BoxLayout:
+        pos_hint: {"x":0, "top":1}
+        size_hint: 0.3, 1
+        orientation: 'vertical'
+        Label:
+            id: col_1
+            text: root.rv_sett_name
+        Label:
+            id: col_2
+            text: root.rv_sett_amount + ' PLN'
     Button:
         id: col_3
         text: 'Add Receipt'
+        pos_hint: {"x":0.3, "top":1}
+        size_hint: 0.3, 1
         on_release:
             root.add_rec(root.rv_add_rec)
             app.root.ids['screen_manager'].current = 'add_receipt'
     Button:
         id: col_4
         text: 'Edit'
+        pos_hint: {"x":0.6, "top":1}
+        size_hint: 0.2, 1
         on_release:
             root.edit_sett(root.rv_edit_sett)
             app.root.ids['screen_manager'].current = 'add_settl'
     Button:
         id: col_5
         text: 'Delete'
+        pos_hint: {"x":0.8, "top":1}
+        size_hint: 0.2, 1
         on_release:
             root.delete_sett(root.rv_del_sett)
             app.root.ids['screen_manager'].current = 'del_conf_sett'
@@ -608,7 +621,7 @@ Builder.load_string('''
 <RV>:
     viewclass: 'MainTable'
     RecycleBoxLayout:
-        default_size: None, dp(40)
+        default_size: None, dp(50)
         default_size_hint: 1, None
         size_hint_y: None
         height: self.minimum_height

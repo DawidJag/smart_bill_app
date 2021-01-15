@@ -238,7 +238,7 @@ GridLayout:
 
                 Label:
                     text: 'Reports'
-                    font_size: 48
+                    font_size: '36sp'
                     pos_hint: {"x":0.1, "top":1}
                     size_hint: 0.79, 0.2
 
@@ -278,7 +278,7 @@ GridLayout:
 
                 Label:
                     text: 'Add / Edit settlement'
-                    font_size: 48
+                    font_size: '36sp'
                     pos_hint: {"x":0.1, "top":1}
                     size_hint: 0.8, 0.2
 
@@ -286,9 +286,12 @@ GridLayout:
                     cols: 2
 
                     Label:
-                        text: 'Name :'
+                        text: 'Name: '
                         pos_hint: {"x":0.1, "top":0.85}
-                        size_hint: 0.3, 0.06
+                        size_hint: 0.3, 0.05
+                        halign: 'right'
+                        valign: 'middle'
+                        text_size: self.size
 
                     TextInput:
                         id: settl_name
@@ -298,9 +301,12 @@ GridLayout:
                         size_hint: 0.5, 0.06
 
                     Label:
-                        text: 'Participants :'
+                        text: 'Participants: '
                         pos_hint: {"x":0.1, "top":0.79}
-                        size_hint: 0.3, 0.06
+                        size_hint: 0.3, 0.05
+                        halign: 'right'
+                        valign: 'middle'
+                        text_size: self.size
 
                     TextInput:
                         id: particip_list
@@ -318,7 +324,7 @@ GridLayout:
                             app.root.ids['screen_manager'].current = "update_conf_sett"
 
                     Label:
-                        text: 'Receipt (optional)'
+                        text: 'Receipt (opt.)'
                         pos_hint: {"x":0.1, "top":0.64}
                         size_hint: 0.3, 0.06
 
@@ -334,9 +340,12 @@ GridLayout:
 
                     Label:
                         text: 'Receipts:'
-                        font_size: 18
+                        halign: 'left'
+                        valign: 'middle'
+                        text_size: self.size
+                        font_size: '24sp'
                         pos_hint: {"x":0.1, "top":0.55}
-                        size_hint: 0.2, 0.05
+                        size_hint: 0.8, 0.05
 
 
                     BoxLayout:
@@ -392,7 +401,7 @@ GridLayout:
 
                 Label:
                     text: 'Add / Edit receipt'
-                    font_size: 48
+                    font_size: '36sp'
                     pos_hint: {"x":0.1, "top":1}
                     size_hint: 0.8, 0.2
 
@@ -400,89 +409,109 @@ GridLayout:
                     cols: 2
 
                     Label:
-                        text: 'Settlement:'
+                        text: 'Settlement: '
                         pos_hint: {"x":0.1, "top":0.8}
-                        size_hint: 0.4, 0.05
+                        size_hint: 0.3, 0.05
+                        halign: 'right'
+                        valign: 'middle'
+                        text_size: self.size
 
                     Label:
                         id: sett_name
+                        markup: True
                         text: 'settlement name'
-                        pos_hint: {"x":0.5, "top":0.8}
-                        size_hint: 0.4, 0.05
+                        pos_hint: {"x":0.4, "top":0.8}
+                        size_hint: 0.5, 0.05
 
                     Label:
-                        text: 'Receipt name:'
+                        text: 'Receipt name: '
                         pos_hint: {"x":0.1, "top":0.75}
-                        size_hint: 0.4, 0.05
+                        size_hint: 0.3, 0.05
+                        halign: 'right'
+                        valign: 'middle'
+                        text_size: self.size
 
                     TextInput:
                         id: rec_name
                         hint_text: 'Type unique name for receipt'
                         multiline: False
                         text: 'receipt name'
-                        pos_hint: {"x":0.5, "top":0.75}
-                        size_hint: 0.4, 0.05
+                        pos_hint: {"x":0.4, "top":0.75}
+                        size_hint: 0.5, 0.05
 
                     Label:
-                        text: 'Amount:'
+                        text: 'Amount: '
                         pos_hint: {"x":0.1, "top":0.7}
-                        size_hint: 0.4, 0.05
+                        size_hint: 0.3, 0.05
+                        halign: 'right'
+                        valign: 'middle'
+                        text_size: self.size
 
                     TextInput:
                         id: amount
                         hint_text: 'Type amount here, like "50,99"'
-                        text: '5'
                         multiline: False
-                        pos_hint: {"x":0.5, "top":0.7}
-                        size_hint: 0.4, 0.05
+                        pos_hint: {"x":0.4, "top":0.7}
+                        size_hint: 0.5, 0.05
 
                     Label:
-                        text: 'Date:'
+                        text: 'Date: '
                         pos_hint: {"x":0.1, "top":0.65}
-                        size_hint: 0.4, 0.05
+                        size_hint: 0.3, 0.05
+                        halign: 'right'
+                        valign: 'middle'
+                        text_size: self.size
 
                     TextInput:
                         id: date
                         hint_text: 'Type date in format: YYYY-MM-DD'
                         multiline: False
-                        text: '3'
-                        pos_hint: {"x":0.5, "top":0.65}
-                        size_hint: 0.4, 0.05
+                        pos_hint: {"x":0.4, "top":0.65}
+                        size_hint: 0.5, 0.05
 
                     Label:
-                        text: 'Category:'
+                        text: 'Category: '
                         pos_hint: {"x":0.1, "top":0.6}
-                        size_hint: 0.4, 0.05
+                        size_hint: 0.3, 0.05
+                        halign: 'right'
+                        valign: 'middle'
+                        text_size: self.size
 
                     TextInput:
                         id: category
                         hint_text: 'e.g. food, transport'
                         multiline: False
-                        pos_hint: {"x":0.5, "top":0.6}
-                        size_hint: 0.4, 0.05
+                        pos_hint: {"x":0.4, "top":0.6}
+                        size_hint: 0.5, 0.05
 
                     Label:
-                        text: 'Comments:'
+                        text: 'Comments: '
                         pos_hint: {"x":0.1, "top":0.55}
-                        size_hint: 0.4, 0.05
+                        size_hint: 0.3, 0.05
+                        halign: 'right'
+                        valign: 'middle'
+                        text_size: self.size
 
                     TextInput:
                         id: remarks
                         multiline: True
-                        pos_hint: {"x":0.5, "top":0.55}
-                        size_hint: 0.4, 0.05
+                        pos_hint: {"x":0.4, "top":0.55}
+                        size_hint: 0.5, 0.05
 
                     Label:
                         # payers list
-                        text: 'Paid by:'
+                        text: 'Paid by: '
                         pos_hint: {"x":0.1, "top":0.5}
-                        size_hint: 0.4, 0.05
+                        size_hint: 0.3, 0.05
+                        halign: 'right'
+                        valign: 'middle'
+                        text_size: self.size
 
                     RoundedButton:
                         text: 'Edit'
                         font_size: '20sp'
-                        pos_hint: {"x":0.5, "top":0.5}
-                        size_hint: 0.4, 0.05
+                        pos_hint: {"x":0.4, "top":0.5}
+                        size_hint: 0.5, 0.05
                         on_release:
                             app.root.ids['add_receipt'].payersBtn()
                             app.root.ids['screen_manager'].current = "payers_list"
@@ -536,7 +565,7 @@ GridLayout:
                     text: 'Fill in payers of this receipt:'
                     font_size: '24sp'
                     pos_hint: {"x":0.1, "top":0.95}
-                    size_hint: 0.39, 0.1
+                    size_hint: 0.8, 0.1
 
                 BoxLayout:
                     pos_hint: {"x":0.1, "top":0.85}
