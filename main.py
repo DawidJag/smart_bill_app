@@ -764,14 +764,15 @@ class smart_billApp(App):
 
     def build(self):
         # TO BE UNCOMMENTED BEFORE COMPILATION
-        # if platform == 'android':
-        #     from android.permissions import request_permissions, Permission
-        #     request_permissions([Permission.READ_EXTERNAL_STORAGE, Permission.WRITE_EXTERNAL_STORAGE])
-        #
-        # primary_storage = primary_external_storage_path()
-        #
-        # PATH = os.path.join(primary_storage, 'Sm@rt_Bill/reports')
-        # os.makedirs(PATH, exist_ok = True)
+        if platform == 'android':
+            from android.storage import primary_external_storage_path
+            from android.permissions import request_permissions, Permission
+            request_permissions([Permission.READ_EXTERNAL_STORAGE, Permission.WRITE_EXTERNAL_STORAGE])
+
+            primary_storage = primary_external_storage_path()
+
+            PATH = os.path.join(primary_storage, 'Sm@rt_Bill/reports')
+            os.makedirs(PATH, exist_ok = True)
 
         return GUI
 
