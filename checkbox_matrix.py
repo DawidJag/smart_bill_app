@@ -79,7 +79,7 @@ class check_box_matrix(FloatLayout):
         temp_array = name_array.copy()
 
         for label in self.labels:
-            self.popup_grid.add_widget(Label(text=label, color=[0.031, 0.792, 0.945, 1]))
+            self.popup_grid.add_widget(Label(text=label, color=[0.031, 0.792, 0.945, 1])) #
 
         for i in range(rows_no):
 
