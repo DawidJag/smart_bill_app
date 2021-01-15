@@ -24,6 +24,7 @@ from kivy.uix.recycleview import RecycleView
 from kivy.uix.popup import Popup
 from kivy.core.window import Window
 from kivy.utils import platform
+from kivy.clock import Clock
 
 
 # from kivy.uix.button import Button
@@ -827,17 +828,13 @@ db = DataBase("baza_danych2_test.txt")
 
 
 
-
 GUI = Builder.load_file("smart_bill.kv")
 
 class smart_billApp(App):
-    manager = ObjectProperty()
+    # manager = ObjectProperty()
 
     def build(self):
         # TO BE UNCOMMENTED BEFORE COMPILATION
-        app = App.get_running_app()
-        screen_manager = app.root.ids['screen_manager']
-        self.manager = screen_manager
         self.bind(on_start=self.post_build_init)
 
         if platform == 'android':
@@ -856,16 +853,14 @@ class smart_billApp(App):
         self.root.ids['main'].on_enter()
 
     def post_build_init(self, *args):
-        if platform() == 'android':
-            import android
-            android.map_key(android.KEYCODE_BACK, 1001)
-
         win = Window
-        win.bind(on_keyboard=self.my_key_handler)
+        Clock.schedule_once(lambda x: win.bind(on_keyboard=self.my_key_handler))
+
 
     def my_key_handler(self, window, keycode1, keycode2, text, modifiers):
         if keycode1 in [27, 1001]:
-            self.manager.current = 'main'
+            # self.manager.current = 'main'
+            self.root.ids['screen_manager'].current = 'main'
             return True
         return False
 
