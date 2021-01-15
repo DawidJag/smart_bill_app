@@ -358,6 +358,7 @@ class AddReceiptWindow(Screen):
     r_category = ""
     r_remarks = ""
     r_payments = ""
+    r_payments_tmp = ""
     part_list = ""
     r_exp_split = ""  # string
 
@@ -411,6 +412,8 @@ class AddReceiptWindow(Screen):
         try:
             record = db.get_record_data(self.s_name, self.r_name)
             r_payments = ast.literal_eval(record['payments'])
+            if self.r_payments_tmp:
+                r_payments = self.r_payments_tmp
         except:
             r_payments = {}
             for participant in ast.literal_eval(self.part_list):
@@ -419,6 +422,7 @@ class AddReceiptWindow(Screen):
         app = App.get_running_app()
         screen_manager = app.root.ids['screen_manager']
         screen = screen_manager.get_screen('payers_list')
+        PayersWindow.amount = self.amount.text
         PayersWindow.show_pay_list(screen, r_payments)
 
         AddReceiptWindow.r_name = self.rec_name.text
@@ -489,12 +493,14 @@ class AddReceiptWindow(Screen):
         AddReceiptWindow.r_date = ""
         AddReceiptWindow.r_category = ""
         AddReceiptWindow.r_remarks = ""
+        AddReceiptWindow.r_payments_tmp = ""
         AddReceiptWindow.editPressed = 0
 
 
 
 class PayersWindow(Screen):
     pay_list = ObjectProperty(None)
+    amount = ""
 
     def __init__(self, **kwargs):
         super(PayersWindow, self).__init__(**kwargs)
@@ -505,7 +511,32 @@ class PayersWindow(Screen):
         self.pay_list.add_widget(self.p_list)
 
     def OKBtn(self):
-        AddReceiptWindow.r_payments = self.p_list.result_dict
+        if float(self.amount) == sum(self.p_list.result_dict.values()):
+            AddReceiptWindow.r_payments = self.p_list.result_dict
+            AddReceiptWindow.r_payments_tmp = self.p_list.result_dict
+            app = App.get_running_app()
+            screen_manager = app.root.ids['screen_manager']
+            screen_manager.current = 'add_receipt'
+            self.pay_list.clear_widgets()
+
+        elif float(self.amount) > sum(self.p_list.result_dict.values()):
+            missing_amount = round(float(self.amount) - sum(self.p_list.result_dict.values()), 2)
+            message = 'Invalid total amount, please correct.\n\nMissing payment of: ' + str(missing_amount) + ' PLN'
+
+            pop = Popup(title='Invalid Amount',
+                        content=Label(text=message, halign='center'),
+                        size_hint=(0.8, 0.4))
+            pop.open()
+        else:
+            surplus_amount = abs(round(float(self.amount) - sum(self.p_list.result_dict.values()), 2))
+            message = 'Invalid total amount, please correct.\n\n ' \
+                      'Sum of amounts paid by all people is higher than total receipt amount by:\n\n ' + str(surplus_amount) + ' PLN'
+
+            label = Label(text=message, halign='center', text_size=(self.width, None))
+            label.texture_update()
+            label.texture_size = label.size
+            pop = Popup(title='Invalid Amount', content=label, size_hint=(0.8, 0.4))
+            pop.open()
 
 
 class ExpSplitWindow(Screen):
@@ -590,9 +621,12 @@ Builder.load_string('''
         Label:
             id: col_1
             text: root.rv_sett_name
+            
         Label:
             id: col_2
             text: root.rv_sett_amount + ' PLN'
+            color: 1,1,1,0.5
+
     Button:
         id: col_3
         text: 'Add Receipt'
