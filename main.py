@@ -37,12 +37,14 @@ class MainWindow(Screen):
     def __init__(self, **kwargs):
         super(MainWindow, self).__init__(**kwargs)
 
+
     def on_enter(self):
         self.sett_list.clear_widgets()
         self.show_RV()
 
     def show_RV(self):  # items
         self.sett_names = db.get_settlements_list()
+        print(self.sett_names)
 
         self.sett_amounts = []
         for settlement in self.sett_names:
@@ -298,6 +300,9 @@ class AddSettlementWindow(Screen):
                              participants=str(self.part_list.split(',')),
                              old_receipt=receipt, new_receipt=receipt)
 
+        if self.s_name_old != self.settl_name.text:
+            db.delete_settlement(self.s_name_old)
+
     def updateDismiss(self):
         self.particip_list.text = self.part_list_old
         self.settl_name.text = self.s_name_old
@@ -322,14 +327,27 @@ class AddSettlementWindow(Screen):
 
         AddReceiptWindow.prev_screen = "add_settl"
 
-    def addSettleBtn(self):         # dodać zapisywanie, jeśli nic sie nie zmieniło
-        if self.settl_name.text != "" and self.particip_list.text != "":
-            db.add_record(settlement=self.settl_name.text, participants=str(self.particip_list.text.split(',')))
-            print(self.s_name)
-            print(AddSettlementWindow.s_name)
-            self.reset()
+    # def addSettleBtn(self):         # dodać zapisywanie, jeśli nic sie nie zmieniło !!!!!!!!!!!!!
+    #     if self.settl_name.text != "" and self.particip_list.text != "":
+    #         db.add_record(settlement=self.settl_name.text, participants=str(self.particip_list.text.split(',')))
+    #         self.reset()
+    #     else:
+    #         invalidForm()
+
+    def addSettleBtn(self):
+        # adding new settlement
+        if (self.s_name_old == "" and self.part_list_old == ""):
+            if self.settl_name.text != "" and self.particip_list.text != "":
+                db.add_record(settlement=self.settl_name.text, participants=str(self.particip_list.text.split(',')))
+                self.reset()
+            else:
+                invalidForm()
+        # saving after change of sett. name or participants list
+        elif self.s_name_old != self.settl_name.text or self.part_list_old != self.particip_list.text:
+            self.updateSett()
         else:
-            invalidForm()
+            pass
+
 
     def cancelBtn(self):
         self.reset()
@@ -381,6 +399,7 @@ class AddReceiptWindow(Screen):
             self.dbUpdateRec()
         else:
             self.dbAddRec()
+
 
         ExpSplitWindow.s_name = self.sett_name.text
         ExpSplitWindow.r_name = self.rec_name.text
@@ -442,15 +461,9 @@ class AddReceiptWindow(Screen):
         if AddReceiptWindow.editPressed:
             self.dbUpdateRec()
             self.reset()
-            app = App.get_running_app()
-            screen_manager = app.root.ids['screen_manager']
-            screen_manager.current = self.prev_screen
         else:
             self.dbAddRec()
             self.reset()
-            app = App.get_running_app()
-            screen_manager = app.root.ids['screen_manager']
-            screen_manager.current = self.prev_screen
 
     def dbAddRec(self):
         if not self.r_exp_split:  # self.r_exp_split => string
@@ -462,14 +475,17 @@ class AddReceiptWindow(Screen):
             self.r_exp_split = str(array.tolist())
 
         if self.amount.text != "" and self.rec_name.text != "":
-            db.add_record(settlement=self.sett_name.text, participants=self.part_list, receipt=self.rec_name.text,
+            result = db.add_record(settlement=self.sett_name.text, participants=self.part_list, receipt=self.rec_name.text,
                           amount=self.amount.text, date=self.date.text, category=self.category.text,
                           remarks=self.remarks.text,
                           payments=str(self.r_payments), exp_split_matrix=self.r_exp_split)
             # self.reset()
-            app = App.get_running_app()
-            screen_manager = app.root.ids['screen_manager']
-            screen_manager.current = self.prev_screen
+            if result == -1:
+                invalidReceipt()
+            else:
+                app = App.get_running_app()
+                screen_manager = app.root.ids['screen_manager']
+                screen_manager.current = self.prev_screen
         else:
             invalidForm()
 
@@ -590,6 +606,13 @@ def invalidForm():
     pop.open()
 
 
+def invalidReceipt():
+    pop = Popup(title='Invalid Receipt',
+                content=Label(text='Receipt already exists. Please correct data.'),
+                size_hint=(0.8, 0.8))
+    pop.open()
+
+
 # ********************* Recycle view - settlements
 # class MainTable(BoxLayout):
 class MainTable(FloatLayout):
@@ -696,7 +719,7 @@ Builder.load_string('''
         text: root.rv_rec_name
     Label:
         id: col_2_rec
-        text: root.rv_rec_amount
+        text: root.rv_rec_amount + ' PLN'
     Button:
         id: col_4_rec
         text: 'Edit'

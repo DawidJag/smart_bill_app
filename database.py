@@ -72,6 +72,7 @@ class DataBase:
     def delete_record(self, settlement, receipt):
         self.settlements[settlement].pop(receipt)
         self.save()
+
         return 1
 
     def delete_settlement(self, settlement):
