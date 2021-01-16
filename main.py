@@ -858,11 +858,12 @@ class smart_billApp(App):
 
 
     def my_key_handler(self, window, keycode1, keycode2, text, modifiers):
-        if keycode1 in [27, 1001]:
-            # self.manager.current = 'main'
-            self.root.ids['screen_manager'].current = 'main'
-            return True
-        return False
+        if self.root.ids['screen_manager'].current != 'main':
+            if keycode1 in [27, 1001]:
+                # self.manager.current = 'main'
+                self.root.ids['screen_manager'].current = 'main'
+                return True
+            return False
 
 
 if __name__ == "__main__":
