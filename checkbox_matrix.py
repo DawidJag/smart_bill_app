@@ -90,7 +90,7 @@ class check_box_matrix(FloatLayout):
             self.dict_checkbox_instances[temp_array[i, 0]] = (temp_array[i, 0].text)
 
             # temp_array[i, 1] = TextInput(text='0', multiline=False, input_filter='float')
-            temp_array[i, 1] = TextInput(text=input_matrix[i, 1], multiline=False, input_filter='float')
+            temp_array[i, 1] = TextInput(text=input_matrix[i, 1], multiline=False, input_filter='float', halign='right')
             self.popup_grid.add_widget(temp_array[i, 1])  # !!! change label text to something different
             temp_array[i, 1].bind(text=self.on_enter)
             self.dict_checkbox_instances[temp_array[i, 1]] = (temp_array[i, 1].text)

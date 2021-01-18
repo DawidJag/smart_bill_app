@@ -47,7 +47,7 @@ class payers_list(FloatLayout):
         self.result_dict = {}
 
         # creating payers list widget
-        self.popup_grid = GridLayout(pos_hint={"x": 0, "top": 1})
+        self.popup_grid = GridLayout(pos_hint={"x": 0, "top": 1}, row_force_default=True, row_default_height=40)
         self.popup_grid.cols = self.cols_no
         self.add_widget(self.popup_grid)
         name_array = np.empty(shape=(self.rows_no, self.cols_no), dtype=object)
@@ -65,7 +65,7 @@ class payers_list(FloatLayout):
             self.popup_grid.add_widget(temp_array[i, 0])
             # temp_array[i, 0].bind(text=self.on_enter)
             self.dict_checkbox_instances[temp_array[i, 0]] = temp_array[i, 0].text
-            temp_array[i, 1] = TextInput(text=str(amount), multiline=False, input_filter='float')
+            temp_array[i, 1] = TextInput(text=str(amount), multiline=False, input_filter='float', halign='right')
             self.popup_grid.add_widget(temp_array[i, 1])
             temp_array[i, 1].bind(text=self.on_enter)
             self.dict_checkbox_instances[temp_array[i, 1]] = float(temp_array[i, 1].text)
