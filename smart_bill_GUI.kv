@@ -1,0 +1,716 @@
+<RoundedButton@Button>:
+    background_color: 0,0,0,0  # the last zero is the critical on, make invisible
+    canvas.before:
+        Color:
+            #rgba: (0.5,0.5,0.5,1) if self.state=='normal' else (0.3,0.6,0.7,1)  # visual feedback of press
+            rgba: (0,0,0,0.5) if self.state=='normal' else (0.3,0.6,0.7,1)  # visual feedback of press
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [18,2,18,2]
+
+
+
+
+<RoundedLeftTopButton@Button>:
+    background_color: 0,0,0,0  # the last zero is the critical on, make invisible
+    canvas.before:
+        Color:
+            #rgba: (0.5,0.5,0.5,1) if self.state=='normal' else (0.3,0.6,0.7,1)  # visual feedback of press
+            rgba: (0,0,0,0.5) if self.state=='normal' else (0.3,0.6,0.7,1)  # visual feedback of press
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [40,2,2,2]
+
+<RoundedRightBottomButton@Button>:
+    background_color: 0,0,0,0  # the last zero is the critical on, make invisible
+    canvas.before:
+        Color:
+            #rgba: (0.5,0.5,0.5,1) if self.state=='normal' else (0.3,0.6,0.7,1)  # visual feedback of press
+            rgba: (0,0,0,0.5) if self.state=='normal' else (0.3,0.6,0.7,1)  # visual feedback of press
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [2,2,40,2]
+
+<RectangleButton@Button>:
+    background_color: 0,0,0,0  # the last zero is the critical on, make invisible
+    canvas.before:
+        Color:
+            #rgba: (0.5,0.5,0.5,1) if self.state=='normal' else (0.3,0.6,0.7,1)  # visual feedback of press
+            rgba: (0,0,0,0.5) if self.state=='normal' else (0.3,0.6,0.7,1)  # visual feedback of press
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [2,2,2,2]
+
+<BackgroundColor@Widget>
+    background_color: 1, 1, 1, 1
+    canvas.before:
+        Color:
+            rgba: root.background_color
+        Rectangle:
+            size: self.size
+            pos: self.pos
+
+<BackgroundLabel@Label+BackgroundColor>
+    background_color: 0, 0, 0, 0
+
+
+GridLayout:
+    cols: 1
+    manager: screen_manager
+    ScreenManager:
+        id: screen_manager
+        MainWindow:
+            canvas.before:
+                Color:
+                    rgba: 0.031, 0.792, 0.945, 0.73
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+
+            name: "main"
+            id: main
+
+            sett_list: sett_list_main
+
+            FloatLayout:
+                cols: 1
+
+                Label:
+                    text: 'Sm@rt Bill'
+                    font_size: '48sp'
+                    pos_hint: {"x":0.1, "top":1}
+                    size_hint: 0.8, 0.2
+
+                RoundedLeftTopButton:
+                    text: 'Reports'
+                    font_size: '24sp'
+                    pos_hint: {"x":0.1, "top":0.8}
+                    size_hint: 0.8, 0.09
+                    on_release:
+                        app.root.ids['screen_manager'].current = "reports"
+
+
+                RoundedRightBottomButton:
+                    text: 'Add settlement'
+                    font_size: '24sp'
+                    pos_hint: {"x":0.1, "top":0.7}
+                    size_hint: 0.8, 0.09
+                    on_release:
+                        root.ids['screen_manager'].transition.direction = "left"
+                        root.ids.main.addSettBtn()
+                        app.root.ids['screen_manager'].current = "add_settl"
+
+                BackgroundLabel:
+                    text: 'Settlements:'
+                    #color: 0.031, 0.792, 0.945, 0.73
+                    #background_color: 1, 1, 1, 1
+                    halign: 'left'
+                    valign: 'middle'
+                    text_size: self.size
+                    font_size: '24sp'
+                    pos_hint: {"x":0.1, "top":0.58}
+                    size_hint: 0.8, 0.1
+
+                BoxLayout:
+                    id: sett_list_main
+                    pos_hint: {"x":0.1, "top":0.45}
+                    size_hint: 0.8, 0.4
+
+        DelSettConfWindow:
+            canvas.before:
+                Color:
+                    rgba: 0.031, 0.792, 0.945, 0.73
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+
+            name: "del_conf_sett"
+            id: del_conf_sett
+            sett_name: set1_name
+
+            FloatLayout:
+                cols: 1
+                #btnYes: btnYes
+                #btnNo: btnNo
+
+                Label:
+                    id: set1_name
+                    font_size: '24sp'
+                    pos_hint: {"x":0.1, "top":0.9}
+                    size_hint: 0.8, 0.15
+
+                Label:
+                    text: 'Would you like to delete settlement?'
+                    font_size: '24sp'
+                    pos_hint: {"x":0.1, "top":0.8}
+                    size_hint: 0.8, 0.15
+
+                RoundedLeftTopButton:
+                    text: 'Confirm'
+                    font_size: '24sp'
+                    pos_hint: {"x":0.1, "top":0.7}
+                    size_hint: 0.35, 0.15
+                    on_release:
+                        root.ids.del_conf_sett.delSett()
+                        root.ids['screen_manager'].transition.direction = "down"
+                        app.root.ids['screen_manager'].current = "main"
+
+
+                RoundedRightBottomButton:
+                    text: 'Cancel'
+                    font_size: '24sp'
+                    pos_hint: {"x":0.55, "top":0.7}
+                    size_hint: 0.35, 0.15
+                    on_release:
+                        app.root.ids['screen_manager'].current = 'main'
+
+        DelRecConfWindow:
+            canvas.before:
+                Color:
+                    rgba: 0.031, 0.792, 0.945, 0.73
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+
+            name: "del_conf_rec"
+            id: del_conf_rec
+            sett_name: set2_name
+            rec_name: rec1_name
+
+            FloatLayout:
+                cols: 1
+
+                Label:
+                    id: set2_name
+                    pos_hint: {"x":0.1, "top":0.9}
+                    size_hint: 0.4, 0.15
+
+                Label:
+                    id: rec1_name
+                    pos_hint: {"x":0.5, "top":0.9}
+                    size_hint: 0.4, 0.15
+
+                Label:
+                    text: 'Would you like to delete receipt?'
+                    font_size: '24sp'
+                    pos_hint: {"x":0.1, "top":0.8}
+                    size_hint: 0.8, 0.15
+
+                RoundedLeftTopButton:
+                    text: 'Confirm'
+                    font_size: '24sp'
+                    pos_hint: {"x":0.1, "top":0.7}
+                    size_hint: 0.35, 0.15
+                    on_release:
+                        root.ids.del_conf_rec.delRec()
+                        root.ids['screen_manager'].transition.direction = "down"
+                        app.root.ids['screen_manager'].current = "add_settl"
+
+
+                RoundedRightBottomButton:
+                    text: 'Cancel'
+                    font_size: '24sp'
+                    pos_hint: {"x":0.55, "top":0.7}
+                    size_hint: 0.35, 0.15
+                    on_release:
+                        app.root.ids['screen_manager'].current = 'add_settl'
+
+        UpdateSettConfWindow:
+            canvas.before:
+                Color:
+                    rgba: 0.031, 0.792, 0.945, 0.73
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+
+            name: "update_conf_sett"
+            id: update_conf_sett
+
+            FloatLayout:
+                cols: 1
+
+                Label:
+                    text: 'Would you like to update settlement?'
+                    font_size: '24sp'
+                    pos_hint: {"x":0.1, "top":0.8}
+                    size_hint: 0.8, 0.15
+
+                RoundedLeftTopButton:
+                    text: 'Confirm'
+                    font_size: '24sp'
+                    pos_hint: {"x":0.1, "top":0.7}
+                    size_hint: 0.35, 0.15
+                    on_release:
+                        root.ids.add_settl.updateSett()
+                        root.ids['screen_manager'].transition.direction = "down"
+                        app.root.ids['screen_manager'].current = "add_settl"
+
+                RoundedRightBottomButton:
+                    text: 'Cancel'
+                    font_size: '24sp'
+                    pos_hint: {"x":0.55, "top":0.7}
+                    size_hint: 0.35, 0.15
+                    on_release:
+                        root.ids.add_settl.updateDismiss()
+                        root.ids['screen_manager'].transition.direction = "down"
+                        app.root.ids['screen_manager'].current = "add_settl"
+
+        ReportsWindow:
+            canvas.before:
+                Color:
+                    rgba: 0.031, 0.792, 0.945, 0.73
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+
+            name: "reports"
+            id: reports
+            sett_list: sett_list_rep
+
+            FloatLayout:
+                cols: 1
+
+                Label:
+                    text: 'Reports'
+                    font_size: '36sp'
+                    pos_hint: {"x":0.1, "top":1}
+                    size_hint: 0.79, 0.2
+
+                BoxLayout:
+                    id: sett_list_rep
+                    pos_hint: {"x":0.1, "top":0.8}
+                    size_hint: 0.79, 0.65
+
+                RoundedButton:
+                    text: 'Back'
+                    font_size: '24sp'
+                    pos_hint: {"x":0.6, "top": 0.15}
+                    size_hint: 0.29, 0.09
+                    on_release:
+                        root.ids['screen_manager'].transition.direction = "right"
+                        app.root.ids['screen_manager'].current = "main"
+
+
+        AddSettlementWindow:
+            canvas.before:
+                Color:
+                    rgba: 0.031, 0.792, 0.945, 0.73
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+
+            name: 'add_settl'
+            id: add_settl
+
+            settl_name: settl_name
+            particip_list: particip_list
+            rec_list: rec_list
+
+            FloatLayout:
+                cols: 1
+                id: float_layout
+
+                Label:
+                    text: 'Add / Edit settlement'
+                    font_size: '36sp'
+                    pos_hint: {"x":0.1, "top":1}
+                    size_hint: 0.8, 0.2
+
+                FloatLayout:
+                    cols: 2
+
+                    Label:
+                        text: 'Name: '
+                        pos_hint: {"x":0.1, "top":0.85}
+                        size_hint: 0.3, 0.05
+                        halign: 'right'
+                        valign: 'middle'
+                        text_size: self.size
+
+                    TextInput:
+                        id: settl_name
+                        hint_text: 'Type name here, like "settlement no.1"'
+                        multiline: False
+                        pos_hint: {"x":0.4, "top":0.85}
+                        size_hint: 0.5, 0.06
+
+                    Label:
+                        text: 'Participants: '
+                        pos_hint: {"x":0.1, "top":0.79}
+                        size_hint: 0.3, 0.05
+                        halign: 'right'
+                        valign: 'middle'
+                        text_size: self.size
+
+                    TextInput:
+                        id: particip_list
+                        hint_text: 'Type all people here, like "name1,name2,name3"'
+                        multiline: False
+                        pos_hint: {"x":0.4, "top":0.79}
+                        size_hint: 0.5, 0.06
+
+                    RoundedButton:
+                        text: 'Update'
+                        font_size: '20sp'
+                        pos_hint: {"x":0.4, "top":0.72}
+                        size_hint: 0.50, 0.05
+                        on_release:
+                            app.root.ids['screen_manager'].current = "update_conf_sett"
+
+                    Label:
+                        text: 'Receipt (opt.) '
+                        pos_hint: {"x":0.1, "top":0.64}
+                        size_hint: 0.3, 0.05
+                        halign: 'right'
+                        valign: 'middle'
+                        text_size: self.size
+
+                    RoundedButton:
+                        text: 'Add'
+                        font_size: '20sp'
+                        pos_hint: {"x":0.4, "top":0.64}
+                        size_hint: 0.50, 0.05
+                        on_release:
+                            app.root.ids['add_settl'].addRecBtn()
+                            root.ids['screen_manager'].transition.direction = "left"
+                            app.root.ids['screen_manager'].current = "add_receipt"
+
+                    Label:
+                        text: 'Receipts:'
+                        halign: 'left'
+                        valign: 'middle'
+                        text_size: self.size
+                        font_size: '24sp'
+                        pos_hint: {"x":0.1, "top":0.55}
+                        size_hint: 0.8, 0.05
+
+
+                    BoxLayout:
+                        id: rec_list
+                        pos_hint: {"x":0.1, "top":0.48}
+                        size_hint: 0.8, 0.37
+
+
+                    RoundedLeftTopButton:
+                        text: 'Back'
+                        font_size: '24sp'
+                        pos_hint: {"x":0.1, "top":0.1}
+                        size_hint: 0.39, 0.09
+                        on_release:
+                            app.root.ids['add_settl'].cancelBtn()
+                            root.ids['screen_manager'].transition.direction = "right"
+                            app.root.ids['screen_manager'].current = "main"
+
+
+                    RoundedRightBottomButton:
+                        text: 'Save'
+                        font_size: '24sp'
+                        pos_hint: {"x":0.5, "top":0.1}
+                        size_hint: 0.39, 0.09
+                        on_release:
+                            app.root.ids['add_settl'].addSettleBtn()
+                            root.ids['screen_manager'].transition.direction = "left"
+                            app.root.ids['screen_manager'].current = "main"
+
+
+        AddReceiptWindow:
+            canvas.before:
+                Color:
+                    rgba: 0.031, 0.792, 0.945, 0.73
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+
+            name: 'add_receipt'
+            id: add_receipt
+
+            sett_name : sett_name
+            rec_name: rec_name
+            amount: amount
+            date: date
+            category: category
+            remarks: remarks
+            #payers_list: payers_list
+
+
+            FloatLayout:
+                cols: 1
+
+                Label:
+                    text: 'Add / Edit receipt'
+                    font_size: '36sp'
+                    pos_hint: {"x":0.1, "top":1}
+                    size_hint: 0.8, 0.2
+
+                FloatLayout:
+                    cols: 2
+
+                    Label:
+                        text: 'Settlement: '
+                        pos_hint: {"x":0.1, "top":0.8}
+                        size_hint: 0.3, 0.05
+                        halign: 'right'
+                        valign: 'middle'
+                        text_size: self.size
+
+                    Label:
+                        id: sett_name
+                        markup: True
+                        bold: True
+                        font_size: '20sp'
+                        text: 'settlement name'
+                        pos_hint: {"x":0.4, "top":0.8}
+                        size_hint: 0.5, 0.05
+
+                    Label:
+                        text: 'Receipt name: '
+                        pos_hint: {"x":0.1, "top":0.75}
+                        size_hint: 0.3, 0.05
+                        halign: 'right'
+                        valign: 'middle'
+                        text_size: self.size
+
+                    TextInput:
+                        id: rec_name
+                        hint_text: 'Type unique name for receipt'
+                        multiline: False
+                        text: 'receipt name'
+                        pos_hint: {"x":0.4, "top":0.75}
+                        size_hint: 0.5, 0.05
+
+                    Label:
+                        text: 'Amount: '
+                        pos_hint: {"x":0.1, "top":0.7}
+                        size_hint: 0.3, 0.05
+                        halign: 'right'
+                        valign: 'middle'
+                        text_size: self.size
+
+
+                    TextInput:
+                        id: amount
+                        hint_text: 'Type amount here, like "50.99"'
+                        multiline: False
+                        pos_hint: {"x":0.4, "top":0.7}
+                        size_hint: 0.5, 0.05
+                        input_filter: 'float'
+
+                    Label:
+                        text: 'Date: '
+                        pos_hint: {"x":0.1, "top":0.65}
+                        size_hint: 0.3, 0.05
+                        halign: 'right'
+                        valign: 'middle'
+                        text_size: self.size
+
+                    TextInput:
+                        id: date
+                        hint_text: 'Type date in format: YYYY-MM-DD'
+                        multiline: False
+                        pos_hint: {"x":0.4, "top":0.65}
+                        size_hint: 0.5, 0.05
+
+                    Label:
+                        text: 'Category: '
+                        pos_hint: {"x":0.1, "top":0.6}
+                        size_hint: 0.3, 0.05
+                        halign: 'right'
+                        valign: 'middle'
+                        text_size: self.size
+
+                    TextInput:
+                        id: category
+                        hint_text: 'e.g. food, transport'
+                        multiline: False
+                        pos_hint: {"x":0.4, "top":0.6}
+                        size_hint: 0.5, 0.05
+
+                    Label:
+                        text: 'Comments: '
+                        pos_hint: {"x":0.1, "top":0.55}
+                        size_hint: 0.3, 0.05
+                        halign: 'right'
+                        valign: 'middle'
+                        text_size: self.size
+
+                    TextInput:
+                        id: remarks
+                        multiline: True
+                        pos_hint: {"x":0.4, "top":0.55}
+                        size_hint: 0.5, 0.05
+
+                    Label:
+                        # payers list
+                        text: 'Paid by: '
+                        pos_hint: {"x":0.1, "top":0.5}
+                        size_hint: 0.3, 0.05
+                        halign: 'right'
+                        valign: 'middle'
+                        text_size: self.size
+
+                    RoundedButton:
+                        text: 'Edit'
+                        font_size: '20sp'
+                        pos_hint: {"x":0.4, "top":0.5}
+                        size_hint: 0.5, 0.05
+                        on_release:
+                            app.root.ids['add_receipt'].payersBtn()
+                            app.root.ids['screen_manager'].current = "payers_list"
+
+
+                    RoundedButton:
+                        text: 'Add expenses split'
+                        font_size: '20sp'
+                        pos_hint: {"x":0.1, "top":0.4}
+                        size_hint: 0.8, 0.09
+                        on_release:
+                            app.root.ids['add_receipt'].exp_split('expense_split')
+                            app.root.ids['screen_manager'].current = "expense_split"
+
+                    RoundedLeftTopButton:
+                        text: 'Back'
+                        font_size: '24sp'
+                        pos_hint: {"x":0.1, "top":0.15}
+                        size_hint: 0.39, 0.09
+                        on_release:
+                            root.ids['screen_manager'].transition.direction = "right"
+                            app.root.ids['add_receipt'].cancelBtn()
+
+                    RoundedRightBottomButton:
+                        text: 'Save'
+                        font_size: '24sp'
+                        pos_hint: {"x":0.5, "top":0.15}
+                        size_hint: 0.39, 0.09
+                        on_release:
+                            app.root.ids['add_receipt'].addRecBtn()
+
+
+        PayersWindow:
+            canvas.before:
+                Color:
+                    rgba: 0.031, 0.792, 0.945, 0.73
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+
+            name: 'payers_list'
+            id: payers_list
+
+            pay_list: pay_list
+
+            FloatLayout:
+                cols: 1
+                size: root.width, root.height
+
+                Label:
+                    text: 'Fill in payers of this receipt:'
+                    font_size: '24sp'
+                    pos_hint: {"x":0.1, "top":0.95}
+                    size_hint: 0.8, 0.1
+
+                BoxLayout:
+                    pos_hint: {"x":0.1, "top":0.85}
+                    size_hint: 0.8, 0.1
+                    Label:
+                        text: 'Payer'
+                    Label:
+                        text: 'Amount'
+
+                BoxLayout:
+                    id: pay_list
+                    pos_hint: {"x":0.1, "top":0.75}
+                    size_hint: 0.8, 0.6
+
+                RoundedLeftTopButton:
+                    text: 'Back'
+                    font_size: '24sp'
+                    pos_hint: {"x":0.1, "top":0.1}
+                    size_hint: 0.4, 0.09
+                    on_release:
+                        app.root.ids['screen_manager'].current = "add_receipt"
+                        root.ids.pay_list.clear_widgets()
+
+                RoundedRightBottomButton:
+                    text: 'Save'
+                    font_size: '24sp'
+                    pos_hint: {"x":0.5, "top":0.1}
+                    size_hint: 0.4, 0.09
+                    on_release:
+                        app.root.ids['payers_list'].OKBtn()
+                        #app.root.ids['screen_manager'].current = "add_receipt"
+                        #root.ids.pay_list.clear_widgets()
+
+
+        ExpSplitWindow:
+            canvas.before:
+                Color:
+                    rgba: 0.031, 0.792, 0.945, 0.73
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+
+            name: 'expense_split'
+            id: expense_split
+
+            grid: grid1
+
+
+            FloatLayout:
+                cols: 1
+                size: root.width, root.height
+
+                ScrollView:
+                    canvas.before:
+                        Color:
+                            rgba: 1,1,1,0.95
+                        Rectangle:
+                            pos: self.pos
+                            size: self.size
+                    pos_hint: {"x":0.05, "top":0.98}
+                    size_hint: 0.9, 0.84
+                    #size: self.size
+                    GridLayout:
+                        id: grid1
+                        cols: 1
+                        pos_hint: {"x":0, "top":1}
+                        size_hint_y: None
+                        row_default_height: '500dp'
+                        row_force_default: True
+                        spacing: 0, 0
+                        padding: 0, 0
+
+                RoundedLeftTopButton:
+                    text: 'Back'
+                    font_size: '24sp'
+                    pos_hint: {"x":0.05, "top":0.1}
+                    size_hint: 0.35, 0.1
+                    on_release:
+                        app.root.ids['expense_split'].CancelBtn()
+                        root.ids['screen_manager'].transition.direction = "right"
+                        app.root.ids['screen_manager'].current = "add_receipt"
+
+                RoundedRightBottomButton:
+                    text: 'Save'
+                    font_size: '24sp'
+                    pos_hint: {"right":0.95, "top":0.1}
+                    size_hint: 0.35, 0.1
+                    on_release:
+                        app.root.ids['expense_split'].OKBtn()
+                        root.ids['screen_manager'].transition.direction = "right"
+                        app.root.ids['screen_manager'].current = "add_receipt"
+
+
+
+
+
+
+
+
+
+
+
+

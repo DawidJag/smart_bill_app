@@ -81,9 +81,11 @@ def save_report(settlement_name, payments):
     file_name = 'report_' + settlement_name + '_' + today + '.pdf'
 
     # TO BE UNCOMMENTED BEFORE COMPILATION
-    # primary_storage = primary_external_storage_path()
-    # PATH = os.path.join(primary_storage, 'Sm@rt_Bill/reports')
-    PATH = './reports'
+    if platform == 'android':
+        primary_storage = primary_external_storage_path()
+        PATH = os.path.join(primary_storage, 'Sm@rt_Bill/reports')
+    else:
+        PATH = './reports'
 
     file = os.path.join(PATH, file_name)
 

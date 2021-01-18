@@ -89,7 +89,7 @@ class DataBase:
         amount = 0
         for key, value in sett.items():
             if not value[1] == "":
-                amount += int(value[1])
+                amount += float(value[1])
         return amount
 
     def get_receipt_amount(self, settlement, receipt):
