@@ -82,6 +82,7 @@ def save_report(settlement_name, payments):
 
     # TO BE UNCOMMENTED BEFORE COMPILATION
     if platform == 'android':
+        from android.storage import primary_external_storage_path
         primary_storage = primary_external_storage_path()
         PATH = os.path.join(primary_storage, 'Sm@rt_Bill/reports')
     else:
