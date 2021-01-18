@@ -161,6 +161,16 @@ class ReportsWindow(Screen):
     def pdfReport(self, settlement_name):
         payments = run_settlement(settlement_name)
         save_report(settlement_name, payments)
+        # popup window
+        label = Label(text='Report has been saved in: internal_storage/Sm@rt_Bill/reports')
+        box = FloatLayout(cols=1)
+        box.add_widget(label)
+        backBtn = Button(text='OK', size_hint=(0.4, 0.15), pos_hint={"x": 0.3, "top": 0.2})
+        box.add_widget(backBtn)
+
+        pop = Popup(title='Payments', content=box, size_hint=(0.9, 0.9))
+        backBtn.bind(on_press=pop.dismiss)
+        pop.open()
 
 
 def run_settlement(settlement_name):
@@ -206,10 +216,16 @@ def settl_report(payments):  # payments => dict
             # box.add_widget(inside_box)
             layout_popup.add_widget(inside_box)
 
-    screen1 = ScrollView(size=(Window.width, Window.height))        # size_hint=(1, 0.8),
-    screen1.add_widget(layout_popup)
+    # scroll_rep = ScrollView(size=(Window.width, Window.height), pos_hint={"x":0, "top":1})        # size_hint=(1, 0.8),
+    scroll_rep = ScrollView(size_hint=(1, 0.8), pos_hint={"x": 0, "top": 1})
+    scroll_rep.add_widget(layout_popup)
+    box = FloatLayout(cols=1)
+    box.add_widget(scroll_rep)
+    backBtn = Button(text='Back', size_hint=(0.4, 0.15), pos_hint={"x": 0.3, "top": 0.2})
+    box.add_widget(backBtn)
 
-    pop = Popup(title='Payments', content=screen1, size_hint=(0.9, 0.9))
+    pop = Popup(title='Payments', content=box, size_hint=(0.9, 0.9))
+    backBtn.bind(on_press=pop.dismiss)
     pop.open()
 
 
@@ -650,27 +666,27 @@ Builder.load_string('''
             text: root.rv_sett_amount + ' PLN'
             color: 1,1,1,0.5
 
-    RoundedButton:
+    RoundedLeftTopButton:
         id: col_3
         text: 'Add Receipt'
         pos_hint: {"x":0.3, "top":1}
-        size_hint: 0.3, 1
+        size_hint: 0.29, 0.98
         on_release:
             root.add_rec(root.rv_add_rec)
             app.root.ids['screen_manager'].current = 'add_receipt'
-    Button:
+    RectangleButton:
         id: col_4
         text: 'Edit'
         pos_hint: {"x":0.6, "top":1}
-        size_hint: 0.2, 1
+        size_hint: 0.19, 0.98
         on_release:
             root.edit_sett(root.rv_edit_sett)
             app.root.ids['screen_manager'].current = 'add_settl'
-    Button:
+    RoundedRightBottomButton:
         id: col_5
         text: 'Delete'
         pos_hint: {"x":0.8, "top":1}
-        size_hint: 0.2, 1
+        size_hint: 0.2, 0.98
         on_release:
             root.delete_sett(root.rv_del_sett)
             app.root.ids['screen_manager'].current = 'del_conf_sett'
@@ -713,6 +729,8 @@ Builder.load_string('''
     rv_add_rec: 'col_3_rec_text'
     rv_edit_rec: 'col_4_rec_text'
     rv_del_rec: 'col_5_rec_text'
+    spacing: 3
+    padding: 1
 
     Label:
         id: col_1_rec
@@ -720,13 +738,13 @@ Builder.load_string('''
     Label:
         id: col_2_rec
         text: root.rv_rec_amount + ' PLN'
-    Button:
+    RoundedLeftTopButton:
         id: col_4_rec
         text: 'Edit'
         on_release:
             root.edit_rec(root.rv_edit_rec)
             app.root.ids['screen_manager'].current = "add_receipt"
-    Button:
+    RoundedRightBottomButton:
         id: col_5_rec
         text: 'Delete'
         on_release:
@@ -769,17 +787,19 @@ Builder.load_string('''
     rv_s_name_rep: 'col_1_rep_text'                           
     rv_pdf_rep: 'col_2_rep_text'
     rv_show_rep: 'col_3_rep_text'
+    spacing: 3
+    padding: 1
 
     Label:
         id: col_1_rep
         text: root.rv_s_name_rep
 
-    Button:
+    RoundedLeftTopButton:
         id: col_2_rep
         text: 'PDF'
         on_release:
             root.pdfBtn(root.rv_pdf_rep)
-    Button:
+    RoundedRightBottomButton:
         id: col_3_rep
         text: 'Show'
         on_release:
@@ -827,7 +847,7 @@ db = DataBase("db.txt")
 
 
 
-GUI = Builder.load_file("smart_bill.kv")
+GUI = Builder.load_file("smart_bill_GUI.kv")
 
 class smart_billApp(App):
     # manager = ObjectProperty()
