@@ -45,7 +45,6 @@ class MainWindow(Screen):
 
     def show_RV(self):  # items
         self.sett_names = db.get_settlements_list()
-        print(self.sett_names)
 
         self.sett_amounts = []
         for settlement in self.sett_names:
@@ -603,7 +602,7 @@ class ExpSplitWindow(Screen):
 def invalidForm():
     pop = Popup(title='Invalid Form',
                 content=Label(text='Please fill in all inputs with valid information.'),
-                size_hint=(None, None), size=(400, 400))
+                size_hint=(0.8, 0.8))
     pop.open()
 
 
@@ -651,7 +650,7 @@ Builder.load_string('''
             text: root.rv_sett_amount + ' PLN'
             color: 1,1,1,0.5
 
-    Button:
+    RoundedButton:
         id: col_3
         text: 'Add Receipt'
         pos_hint: {"x":0.3, "top":1}
@@ -815,7 +814,7 @@ class RV_rep(RecycleView):
 # kv = Builder.load_file("smart_bill.kv")
 
 # sm = WindowManager()
-db = DataBase("baza_danych2_test.txt")
+db = DataBase("db.txt")
 
 # screens = [MainWindow(name="main"), PayersWindow(name='payers_list'), ExpSplitWindow(name="expense_split"),
 #            ReportsWindow(name='reports'), AddSettlementWindow(name='add_settl'), AddReceiptWindow(name='add_receipt'),

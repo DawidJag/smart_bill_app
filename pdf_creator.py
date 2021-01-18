@@ -3,6 +3,9 @@ from datetime import date
 import os
 import os.path
 # from android.storage import primary_external_storage_path
+import webbrowser
+
+
 
 
 class PDF(FPDF):
@@ -85,6 +88,8 @@ def save_report(settlement_name, payments):
     file = os.path.join(PATH, file_name)
 
     pdf.output(file, 'F')
+
+    webbrowser.open(file)
 
     # opening the pdf file with report
     # subprocess.Popen([file], shell=True)
