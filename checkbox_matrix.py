@@ -64,7 +64,8 @@ class check_box_matrix(FloatLayout):
         input_matrix = tmp_default_array
 
         # creating checkbox matrix widget
-        self.popup_grid = GridLayout(pos_hint={"x":0, "top":1})
+        self.popup_grid = GridLayout(pos_hint={"x":0, "top":1}, size_hint_y=None, Size_hint_x=None, row_default_height= '80dp',
+                                     row_force_default= True, col_default_width= '400dp', col_force_default= True)
         self.popup_grid.cols = self.cols_no
         self.add_widget(self.popup_grid)
 
