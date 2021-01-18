@@ -162,13 +162,14 @@ class ReportsWindow(Screen):
         payments = run_settlement(settlement_name)
         save_report(settlement_name, payments)
         # popup window
-        label = Label(text='Report has been saved in: internal_storage/Sm@rt_Bill/reports')
+        label = Label(text='Report has been saved in:\n\n internal_storage/Sm@rt_Bill/reports', halign='center',
+                      size_hint=(1, 0.8), pos_hint={"x": 0, "top": 1})
         box = FloatLayout(cols=1)
         box.add_widget(label)
         backBtn = Button(text='OK', size_hint=(0.4, 0.15), pos_hint={"x": 0.3, "top": 0.2})
         box.add_widget(backBtn)
 
-        pop = Popup(title='Payments', content=box, size_hint=(0.9, 0.9))
+        pop = Popup(title='Payments', content=box, size_hint=(0.8, 0.4), )
         backBtn.bind(on_press=pop.dismiss)
         pop.open()
 
@@ -618,14 +619,14 @@ class ExpSplitWindow(Screen):
 def invalidForm():
     pop = Popup(title='Invalid Form',
                 content=Label(text='Please fill in all inputs with valid information.'),
-                size_hint=(0.8, 0.8))
+                size_hint=(0.8, 0.4))
     pop.open()
 
 
 def invalidReceipt():
     pop = Popup(title='Invalid Receipt',
                 content=Label(text='Receipt already exists. Please correct data.'),
-                size_hint=(0.8, 0.8))
+                size_hint=(0.8, 0.4))
     pop.open()
 
 
