@@ -152,7 +152,7 @@ GridLayout:
                 RoundedLeftTopButton:
                     text: 'Confirm'
                     font_size: '24sp'
-                    pos_hint: {"x":0.1, "top":0.7}
+                    pos_hint: {"x":0.1, "top":0.3}
                     size_hint: 0.35, 0.15
                     on_release:
                         root.ids.del_conf_sett.delSett()
@@ -163,7 +163,7 @@ GridLayout:
                 RoundedRightBottomButton:
                     text: 'Cancel'
                     font_size: '24sp'
-                    pos_hint: {"x":0.55, "top":0.7}
+                    pos_hint: {"x":0.55, "top":0.3}
                     size_hint: 0.35, 0.15
                     on_release:
                         app.root.ids['screen_manager'].current = 'main'
@@ -203,7 +203,7 @@ GridLayout:
                 RoundedLeftTopButton:
                     text: 'Confirm'
                     font_size: '24sp'
-                    pos_hint: {"x":0.1, "top":0.7}
+                    pos_hint: {"x":0.1, "top":0.3}
                     size_hint: 0.35, 0.15
                     on_release:
                         root.ids.del_conf_rec.delRec()
@@ -214,7 +214,7 @@ GridLayout:
                 RoundedRightBottomButton:
                     text: 'Cancel'
                     font_size: '24sp'
-                    pos_hint: {"x":0.55, "top":0.7}
+                    pos_hint: {"x":0.55, "top":0.3}
                     size_hint: 0.35, 0.15
                     on_release:
                         app.root.ids['screen_manager'].current = 'add_settl'
@@ -242,7 +242,7 @@ GridLayout:
                 RoundedLeftTopButton:
                     text: 'Confirm'
                     font_size: '24sp'
-                    pos_hint: {"x":0.1, "top":0.7}
+                    pos_hint: {"x":0.1, "top":0.3}
                     size_hint: 0.35, 0.15
                     on_release:
                         root.ids.add_settl.updateSett()
@@ -252,7 +252,7 @@ GridLayout:
                 RoundedRightBottomButton:
                     text: 'Cancel'
                     font_size: '24sp'
-                    pos_hint: {"x":0.55, "top":0.7}
+                    pos_hint: {"x":0.55, "top":0.3}
                     size_hint: 0.35, 0.15
                     on_release:
                         root.ids.add_settl.updateDismiss()
@@ -385,20 +385,20 @@ GridLayout:
                         valign: 'middle'
                         text_size: self.size
                         font_size: '24sp'
-                        pos_hint: {"x":0.1, "top":0.55}
+                        pos_hint: {"x":0.1, "top":0.57}
                         size_hint: 0.8, 0.05
 
 
                     BoxLayout:
                         id: rec_list
-                        pos_hint: {"x":0.1, "top":0.48}
-                        size_hint: 0.8, 0.37
+                        pos_hint: {"x":0.1, "top":0.51}
+                        size_hint: 0.8, 0.35
 
 
                     RoundedLeftTopButton:
                         text: 'Back'
                         font_size: '24sp'
-                        pos_hint: {"x":0.1, "top":0.1}
+                        pos_hint: {"x":0.1, "top":0.15}
                         size_hint: 0.39, 0.09
                         on_release:
                             app.root.ids['add_settl'].cancelBtn()
@@ -409,7 +409,7 @@ GridLayout:
                     RoundedRightBottomButton:
                         text: 'Save'
                         font_size: '24sp'
-                        pos_hint: {"x":0.5, "top":0.1}
+                        pos_hint: {"x":0.5, "top":0.15}
                         size_hint: 0.39, 0.09
                         on_release:
                             app.root.ids['add_settl'].addSettleBtn()
@@ -563,7 +563,7 @@ GridLayout:
 
 
                     RoundedButton:
-                        text: 'Add expenses split'
+                        text: 'Add / Edit expenses split'
                         font_size: '20sp'
                         pos_hint: {"x":0.1, "top":0.4}
                         size_hint: 0.8, 0.09
@@ -622,14 +622,14 @@ GridLayout:
 
                 BoxLayout:
                     id: pay_list
-                    pos_hint: {"x":0.1, "top":0.75}
-                    size_hint: 0.8, 0.6
+                    pos_hint: {"x":0.05, "top":0.75}
+                    size_hint: 0.9, 0.58
 
                 RoundedLeftTopButton:
                     text: 'Back'
                     font_size: '24sp'
-                    pos_hint: {"x":0.1, "top":0.1}
-                    size_hint: 0.4, 0.09
+                    pos_hint: {"x":0.05, "top":0.15}
+                    size_hint: 0.44, 0.09
                     on_release:
                         app.root.ids['screen_manager'].current = "add_receipt"
                         root.ids.pay_list.clear_widgets()
@@ -637,8 +637,8 @@ GridLayout:
                 RoundedRightBottomButton:
                     text: 'Save'
                     font_size: '24sp'
-                    pos_hint: {"x":0.5, "top":0.1}
-                    size_hint: 0.4, 0.09
+                    pos_hint: {"x":0.51, "top":0.15}
+                    size_hint: 0.44, 0.09
                     on_release:
                         app.root.ids['payers_list'].OKBtn()
                         #app.root.ids['screen_manager'].current = "add_receipt"
@@ -666,28 +666,31 @@ GridLayout:
                 ScrollView:
                     canvas.before:
                         Color:
-                            rgba: 1,1,1,0.95
+                            rgba: 0.906,0.906,0.906,0.95
                         Rectangle:
                             pos: self.pos
                             size: self.size
                     pos_hint: {"x":0.05, "top":0.98}
-                    size_hint: 0.9, 0.84
+                    size_hint: 0.9, 0.75
                     #size: self.size
                     GridLayout:
                         id: grid1
                         cols: 1
                         pos_hint: {"x":0, "top":1}
                         size_hint_y: None
+                        size_hint_x: None
                         row_default_height: '500dp'
                         row_force_default: True
+                        col_default_width: '400dp'
+                        col_force_default: True
                         spacing: 0, 0
                         padding: 0, 0
 
                 RoundedLeftTopButton:
                     text: 'Back'
                     font_size: '24sp'
-                    pos_hint: {"x":0.05, "top":0.1}
-                    size_hint: 0.35, 0.1
+                    pos_hint: {"x":0.05, "top":0.15}
+                    size_hint: 0.44, 0.1
                     on_release:
                         app.root.ids['expense_split'].CancelBtn()
                         root.ids['screen_manager'].transition.direction = "right"
@@ -696,8 +699,8 @@ GridLayout:
                 RoundedRightBottomButton:
                     text: 'Save'
                     font_size: '24sp'
-                    pos_hint: {"right":0.95, "top":0.1}
-                    size_hint: 0.35, 0.1
+                    pos_hint: {"right":0.95, "top":0.15}
+                    size_hint: 0.44, 0.1
                     on_release:
                         app.root.ids['expense_split'].OKBtn()
                         root.ids['screen_manager'].transition.direction = "right"
