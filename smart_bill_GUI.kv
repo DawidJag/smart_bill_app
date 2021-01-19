@@ -112,13 +112,21 @@ GridLayout:
                     valign: 'middle'
                     text_size: self.size
                     font_size: '24sp'
-                    pos_hint: {"x":0.1, "top":0.58}
+                    pos_hint: {"x":0.1, "top":0.60}
                     size_hint: 0.8, 0.1
 
                 BoxLayout:
                     id: sett_list_main
-                    pos_hint: {"x":0.1, "top":0.45}
+                    pos_hint: {"x":0.1, "top":0.50}
                     size_hint: 0.8, 0.4
+
+                RoundedButton:
+                    text: 'Go to Youtube tutorial'
+                    font_size: '12sp'
+                    pos_hint: {"x":0.1, "top":0.08}
+                    size_hint: 0.8, 0.03
+                    on_release:
+                        root.ids.main.youtubeBtn()
 
         DelSettConfWindow:
             canvas.before:
@@ -664,27 +672,34 @@ GridLayout:
                 size: root.width, root.height
 
                 ScrollView:
-                    canvas.before:
-                        Color:
-                            rgba: 0.906,0.906,0.906,0.95
-                        Rectangle:
-                            pos: self.pos
-                            size: self.size
+                    #canvas.before:
+                     #   Color:
+                      #      rgba: 0.906,0.906,0.906,0.95
+                       # Rectangle:
+                        #    pos: self.pos
+                         #   size: self.width, self.height * 0.8
                     pos_hint: {"x":0.05, "top":0.98}
-                    size_hint: 0.9, 0.75
+                    size_hint: 0.9, 0.7
                     #size: self.size
                     GridLayout:
                         id: grid1
                         cols: 1
                         pos_hint: {"x":0, "top":1}
-                        size_hint_y: None
-                        size_hint_x: None
-                        row_default_height: '500dp'
-                        row_force_default: True
+                        size_hint: 2, 1
+                        #size_hint_x: None
+                        #row_default_height: '500dp'
+                        #row_force_default: True
                         col_default_width: '400dp'
                         col_force_default: True
-                        spacing: 0, 0
-                        padding: 0, 0
+                        #spacing: 0, 0
+                        #padding: 0, 0
+
+                Label:
+                    text: 'Note: Here you can make split of expenses that should be assigned only to specific people. Input position from the bill (e.g. "pizza", "30") and "tick" the people who should be charged for.'
+                    pos_hint: {"x":0.05, "top":0.27}
+                    size_hint: 0.9, 0.1
+                    text_size: self.size
+
 
                 RoundedLeftTopButton:
                     text: 'Back'
@@ -705,15 +720,3 @@ GridLayout:
                         app.root.ids['expense_split'].OKBtn()
                         root.ids['screen_manager'].transition.direction = "right"
                         app.root.ids['screen_manager'].current = "add_receipt"
-
-
-
-
-
-
-
-
-
-
-
-
