@@ -103,11 +103,12 @@ class DelSettConfWindow(Screen):
     sett_name = ObjectProperty(None)
     s_name = ""
 
-    def pre_enter(self):
+    def on_enter(self):
         self.sett_name.text = self.s_name
 
     def delSett(self):
-        db.delete_settlement(self.sett_name.text)
+        db.delete_settlement(self.s_name)
+
 
 
 class DelRecConfWindow(Screen):
@@ -116,9 +117,9 @@ class DelRecConfWindow(Screen):
     s_name = ""
     r_name = ""
 
-    def pre_enter(self):
-        self.rec_name.text = self.r_name
-        self.sett_name.text = self.s_name
+    # def on_enter(self):
+    #     self.rec_name.text = self.r_name
+    #     self.sett_name.text = self.s_name
 
     def delRec(self):
         db.delete_record(self.s_name, self.r_name)
@@ -255,6 +256,7 @@ class AddSettlementWindow(Screen):
     def show_rec_RV(self):  # items
         if self.s_name:
             receipts = list(filter(None, db.get_receipts_list(self.s_name)))
+            receipts = sorted(receipts, key=str.lower)
             self.rec_names = receipts
         else:
             self.rec_names = []
