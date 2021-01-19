@@ -12,7 +12,6 @@ from kivy.uix.widget import Widget
 # The Label widget is for rendering text.
 from kivy.uix.label import Label
 
-
 # To use the checkbox must import it from this module
 from kivy.uix.checkbox import CheckBox
 
@@ -35,7 +34,6 @@ import numpy as np
 import ast
 
 
-
 class check_box_matrix(FloatLayout):
     # matrix = ObjectProperty(None)
 
@@ -46,26 +44,26 @@ class check_box_matrix(FloatLayout):
         super(check_box_matrix, self).__init__(**kwargs)
         self.cols_no = cols_no + 2  # first two columns: item_name, amount
         self.rows_no = rows_no
-        self.labels = ['Item', 'Amount'] + labels   # columns names
-        self.result_matrix = np.empty(shape=(self.rows_no, self.cols_no), dtype=object)     # matrix returned with values from all children widgets
-
+        self.labels = ['Item', 'Amount'] + labels  # columns names
+        self.result_matrix = np.empty(shape=(self.rows_no, self.cols_no),
+                                      dtype=object)  # matrix returned with values from all children widgets
 
         # preparation of input_matrix
-        items = ['item ' + str(x) for x in range(1, 11)]            # fixed no. of rows => 10
+        items = ['item ' + str(x) for x in range(1, 11)]  # fixed no. of rows => 10
         items = np.array(items).reshape((-1, 1))
         zeros = np.zeros((10, 1))
         checks = np.ones((10, cols_no))
         tmp_default_array = np.concatenate((items, zeros, checks), axis=1)
         if exp_split_matrix:
-            tmp_input_array = np.array(ast.literal_eval(exp_split_matrix))             # exp_split_matrix => string
+            tmp_input_array = np.array(ast.literal_eval(exp_split_matrix))  # exp_split_matrix => string
             row = tmp_input_array.shape[0]
             col = tmp_input_array.shape[1]
             tmp_default_array[0:row, 0:col] = tmp_input_array
         input_matrix = tmp_default_array
 
         # creating checkbox matrix widget
-        self.popup_grid = GridLayout(pos_hint={"x":0, "top":1}, size_hint_y=None, Size_hint_x=None, row_default_height= '80dp',
-                                     row_force_default= True, col_default_width= '400dp', col_force_default= True)
+        self.popup_grid = GridLayout(pos_hint={"x": 0, "top": 1})
+        self.popup_grid.bind(minimum_height=self.popup_grid.setter('height'))
         self.popup_grid.cols = self.cols_no
         self.add_widget(self.popup_grid)
 
@@ -80,7 +78,8 @@ class check_box_matrix(FloatLayout):
         temp_array = name_array.copy()
 
         for label in self.labels:
-            self.popup_grid.add_widget(Label(text=label, color=[0.031, 0.792, 0.945, 1]))
+            # self.popup_grid.add_widget(Label(text=label, color=[0.031, 0.792, 0.945, 1]))
+            self.popup_grid.add_widget(Label(text=label, color=[1, 1, 1, 1], bold=True))
 
         for i in range(rows_no):
 
@@ -98,7 +97,7 @@ class check_box_matrix(FloatLayout):
 
             for j in range(2, self.cols_no):
                 checked = bool(input_matrix[i, j].astype(np.float))
-                temp_array[i, j] = CheckBox(active=checked)
+                temp_array[i, j] = CheckBox(active=checked, color=[0, 0, 0, 0.6])
 
                 self.popup_grid.add_widget(temp_array[i, j])
                 temp_array[i, j].bind(active=self.on_checkbox_Active)
@@ -113,18 +112,19 @@ class check_box_matrix(FloatLayout):
             for key_a, key_b in zip(self.dict_names, self.dict_checkbox_instances):
                 self.dict_names[key_a] = self.dict_checkbox_instances[key_b]
 
-            self.result_matrix = np.array(list(self.dict_checkbox_instances.values())).reshape((self.rows_no, self.cols_no))
+            self.result_matrix = np.array(list(self.dict_checkbox_instances.values())).reshape(
+                (self.rows_no, self.cols_no))
         else:
             self.dict_checkbox_instances[checkboxInstance] = 0
             for key_a, key_b in zip(self.dict_names, self.dict_checkbox_instances):
                 self.dict_names[key_a] = self.dict_checkbox_instances[key_b]
 
-            self.result_matrix = np.array(list(self.dict_checkbox_instances.values())).reshape((self.rows_no, self.cols_no))
+            self.result_matrix = np.array(list(self.dict_checkbox_instances.values())).reshape(
+                (self.rows_no, self.cols_no))
 
     def on_enter(self, instance, value):
         self.dict_checkbox_instances[instance] = value
         self.result_matrix = np.array(list(self.dict_checkbox_instances.values())).reshape((self.rows_no, self.cols_no))
-
 
 # class CheckBoxApp(App):
 #     def build(self):
