@@ -83,7 +83,7 @@ class DataBase:
     def get_settlements_list(self):
         settlements = list(self.settlements.keys())
         settlements = sorted(settlements, key=str.lower)
-        # return self.settlements.keys()
+        # return self.settlements.keys() *
         return settlements
 
     def get_settlement_amount(self, settlement):

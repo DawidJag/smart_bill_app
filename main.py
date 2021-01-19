@@ -252,7 +252,7 @@ class AddSettlementWindow(Screen):
         self.part_list_old = self.part_list
         # print(self.s_name)
 
-    # ******************* Receipts list
+    # ******************** Receipts list
     def show_rec_RV(self):  # items
         if self.s_name:
             receipts = list(filter(None, db.get_receipts_list(self.s_name)))
