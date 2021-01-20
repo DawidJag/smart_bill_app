@@ -1,3 +1,5 @@
+#:import Clock kivy.clock.Clock
+
 <RoundedButton@Button>:
     background_color: 0,0,0,0  # the last zero is the critical on, make invisible
     canvas.before:
@@ -8,8 +10,6 @@
             pos: self.pos
             size: self.size
             radius: [18,2,18,2]
-
-
 
 
 <RoundedLeftTopButton@Button>:
@@ -332,7 +332,7 @@ GridLayout:
                     cols: 2
 
                     Label:
-                        text: 'Name: '
+                        text: 'Name: *'
                         pos_hint: {"x":0.1, "top":0.85}
                         size_hint: 0.3, 0.05
                         halign: 'right'
@@ -345,9 +345,11 @@ GridLayout:
                         multiline: False
                         pos_hint: {"x":0.4, "top":0.85}
                         size_hint: 0.5, 0.06
+                        on_focus:
+                            app.root.ids['add_receipt'].on_focus(self)
 
                     Label:
-                        text: 'Participants: '
+                        text: 'Participants: *'
                         pos_hint: {"x":0.1, "top":0.79}
                         size_hint: 0.3, 0.05
                         halign: 'right'
@@ -360,6 +362,8 @@ GridLayout:
                         multiline: False
                         pos_hint: {"x":0.4, "top":0.79}
                         size_hint: 0.5, 0.06
+                        on_focus:
+                            app.root.ids['add_receipt'].on_focus(self)
 
                     RoundedButton:
                         text: 'Update'
@@ -375,6 +379,15 @@ GridLayout:
                         size_hint: 0.3, 0.05
                         halign: 'right'
                         valign: 'middle'
+                        text_size: self.size
+
+                    Label:
+                        text: '* required'
+                        pos_hint: {"x":0.1, "top":0.58}
+                        size_hint: 0.3, 0.03
+                        halign: 'left'
+                        valign: 'middle'
+                        font_size: '12sp'
                         text_size: self.size
 
                     RoundedButton:
@@ -393,14 +406,14 @@ GridLayout:
                         valign: 'middle'
                         text_size: self.size
                         font_size: '24sp'
-                        pos_hint: {"x":0.1, "top":0.57}
+                        pos_hint: {"x":0.1, "top":0.55}
                         size_hint: 0.8, 0.05
 
 
                     BoxLayout:
                         id: rec_list
-                        pos_hint: {"x":0.1, "top":0.51}
-                        size_hint: 0.8, 0.35
+                        pos_hint: {"x":0.1, "top":0.50}
+                        size_hint: 0.8, 0.34
 
 
                     RoundedLeftTopButton:
@@ -475,7 +488,7 @@ GridLayout:
                         size_hint: 0.5, 0.05
 
                     Label:
-                        text: 'Receipt name: '
+                        text: 'Receipt name: *'
                         pos_hint: {"x":0.1, "top":0.75}
                         size_hint: 0.3, 0.05
                         halign: 'right'
@@ -489,9 +502,11 @@ GridLayout:
                         text: 'receipt name'
                         pos_hint: {"x":0.4, "top":0.75}
                         size_hint: 0.5, 0.05
+                        on_focus:
+                            app.root.ids['add_receipt'].on_focus(self)
 
                     Label:
-                        text: 'Amount: '
+                        text: 'Amount: *'
                         pos_hint: {"x":0.1, "top":0.7}
                         size_hint: 0.3, 0.05
                         halign: 'right'
@@ -506,6 +521,8 @@ GridLayout:
                         pos_hint: {"x":0.4, "top":0.7}
                         size_hint: 0.5, 0.05
                         input_filter: 'float'
+                        on_focus:
+                            app.root.ids['add_receipt'].on_focus(self)
 
                     Label:
                         text: 'Date: '
@@ -517,10 +534,12 @@ GridLayout:
 
                     TextInput:
                         id: date
-                        hint_text: 'Type date in format: YYYY-MM-DD'
+                        hint_text: 'Date in format: YYYY-MM-DD'
                         multiline: False
                         pos_hint: {"x":0.4, "top":0.65}
                         size_hint: 0.5, 0.05
+                        on_focus:
+                            app.root.ids['add_receipt'].on_focus(self)
 
                     Label:
                         text: 'Category: '
@@ -536,6 +555,8 @@ GridLayout:
                         multiline: False
                         pos_hint: {"x":0.4, "top":0.6}
                         size_hint: 0.5, 0.05
+                        on_focus:
+                            app.root.ids['add_receipt'].on_focus(self)
 
                     Label:
                         text: 'Comments: '
@@ -550,6 +571,8 @@ GridLayout:
                         multiline: True
                         pos_hint: {"x":0.4, "top":0.55}
                         size_hint: 0.5, 0.05
+                        on_focus:
+                            app.root.ids['add_receipt'].on_focus(self)
 
                     Label:
                         # payers list
@@ -568,6 +591,15 @@ GridLayout:
                         on_release:
                             app.root.ids['add_receipt'].payersBtn()
                             app.root.ids['screen_manager'].current = "payers_list"
+
+                    Label:
+                        text: '* required'
+                        pos_hint: {"x":0.1, "top":0.44}
+                        size_hint: 0.3, 0.03
+                        halign: 'left'
+                        valign: 'middle'
+                        font_size: '12sp'
+                        text_size: self.size
 
 
                     RoundedButton:

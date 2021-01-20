@@ -18,6 +18,7 @@ from kivy.uix.screenmanager import ScreenManager, Screen, NoTransition, CardTran
 from kivy.properties import ObjectProperty
 from kivy.uix.label import Label
 from kivy.uix.button import Button
+from kivy.uix.textinput import TextInput
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.gridlayout import GridLayout
@@ -96,7 +97,7 @@ class MainWindow(Screen):
         DelSettConfWindow.prev_screen = "main"
 
     def youtubeBtn(self):
-        webbrowser.open('http://youtube.com')
+        webbrowser.open('https://youtu.be/KUo5YfdCatw')
 
 
 class DelSettConfWindow(Screen):
@@ -373,6 +374,10 @@ class AddSettlementWindow(Screen):
         self.particip_list.text = ''
         self.settl_name.text = ''
 
+    def on_focus(self, instance):
+        if instance.focus:
+            Clock.schedule_once(lambda dt: instance.select_all())
+
 
 class AddReceiptWindow(Screen):
     sett_name = ObjectProperty(None)
@@ -527,6 +532,10 @@ class AddReceiptWindow(Screen):
         AddReceiptWindow.r_remarks = ""
         AddReceiptWindow.r_payments_tmp = ""
         AddReceiptWindow.editPressed = 0
+
+    def on_focus(self, instance):
+        if instance.focus:
+            Clock.schedule_once(lambda dt: instance.select_all())
 
 
 class PayersWindow(Screen):
@@ -830,6 +839,8 @@ class RV_rep(RecycleView):
 
 
 # ********************
+
+
 
 
 # class WindowManager(ScreenManager):

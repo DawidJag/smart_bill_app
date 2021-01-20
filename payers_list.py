@@ -20,6 +20,7 @@ from kivy.uix.checkbox import CheckBox
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.boxlayout import BoxLayout
+from kivy.clock import Clock
 
 from kivy.uix.textinput import TextInput
 from kivy.properties import NumericProperty
@@ -67,7 +68,7 @@ class payers_list(FloatLayout):
             self.dict_checkbox_instances[temp_array[i, 0]] = temp_array[i, 0].text
             temp_array[i, 1] = TextInput(text=str(amount), multiline=False, input_filter='float', halign='right')
             self.popup_grid.add_widget(temp_array[i, 1])
-            temp_array[i, 1].bind(text=self.on_enter)
+            temp_array[i, 1].bind(text=self.on_enter, focus=self.on_focus)
             self.dict_checkbox_instances[temp_array[i, 1]] = float(temp_array[i, 1].text)
             i += 1
 
@@ -84,4 +85,8 @@ class payers_list(FloatLayout):
 
         it = iter(self.dict_checkbox_instances.values())            # creating iterator
         self.result_dict = dict(zip(it, it))
+
+    def on_focus(self, instance, value):
+        if value:
+            Clock.schedule_once(lambda dt: instance.select_all())
 
