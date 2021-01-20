@@ -26,6 +26,7 @@ from kivy.properties import NumericProperty
 from kivy.properties import ObjectProperty
 from kivy.graphics import Color, Rectangle
 from kivy.graphics.instructions import Canvas
+from kivy.clock import Clock
 
 from kivy.uix.scrollview import ScrollView
 from kivy.uix.screenmanager import Screen
@@ -85,13 +86,13 @@ class check_box_matrix(FloatLayout):
             # temp_array[i, 0] = TextInput(text='item ' + str(i + 1))
             temp_array[i, 0] = TextInput(text=input_matrix[i, 0])
             self.popup_grid.add_widget(temp_array[i, 0])  # !!! change label text to something different
-            temp_array[i, 0].bind(text=self.on_enter)
+            temp_array[i, 0].bind(text=self.on_enter, focus=self.on_focus)
             self.dict_checkbox_instances[temp_array[i, 0]] = (temp_array[i, 0].text)
 
             # temp_array[i, 1] = TextInput(text='0', multiline=False, input_filter='float')
             temp_array[i, 1] = TextInput(text=input_matrix[i, 1], multiline=False, input_filter='float', halign='right')
             self.popup_grid.add_widget(temp_array[i, 1])  # !!! change label text to something different
-            temp_array[i, 1].bind(text=self.on_enter)
+            temp_array[i, 1].bind(text=self.on_enter, focus=self.on_focus)
             self.dict_checkbox_instances[temp_array[i, 1]] = (temp_array[i, 1].text)
 
             for j in range(2, self.cols_no):
@@ -124,6 +125,11 @@ class check_box_matrix(FloatLayout):
     def on_enter(self, instance, value):
         self.dict_checkbox_instances[instance] = value
         self.result_matrix = np.array(list(self.dict_checkbox_instances.values())).reshape((self.rows_no, self.cols_no))
+
+    def on_focus(self, instance, value):
+        if value:
+            Clock.schedule_once(lambda dt: instance.select_all())
+
 
 # class CheckBoxApp(App):
 #     def build(self):
