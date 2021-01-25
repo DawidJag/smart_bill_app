@@ -86,7 +86,7 @@ class Receipt():
         self.tot_exp_per_person = self.get_tot_exp_per_person()
 
     def get_priv_exp_matrix(self):
-        input_matrix = self.exp_split_matrix.copy()
+        input_matrix = self.exp_split_matrix.copy()         # @@@@@@@@ tutaj zamienić na pobieranie wszystkiego oprócz pierwszego wiersza
         A = input_matrix[:, 2:].astype(float)  # type conversion
         B = A.sum(axis=1).reshape((-1, 1))
         C = input_matrix[:, 1].astype(float).reshape((-1, 1))

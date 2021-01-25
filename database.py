@@ -25,7 +25,8 @@ class DataBase:
 
     def add_record(self, settlement, participants, receipt='', amount='', payments='', exp_split_matrix='', category='', date='', remarks=''):
         if settlement.strip() in self.settlements.keys():
-            if receipt.strip() not in self.settlements[settlement.strip()]:  # checking if specific receipt already exists for that settlement, if not add receipt to the settlement
+            # checking if specific receipt already exists for that settlement, if not add receipt to the settlement
+            if receipt.strip() not in self.settlements[settlement.strip()]:
                 self.settlements[settlement.strip()].update(
                     {receipt.strip(): [participants, amount, payments, exp_split_matrix, category, date, remarks]})
                 self.save()
@@ -68,11 +69,17 @@ class DataBase:
                         new_record['remarks'])
         return 1
 
+    def update_participants(self, settlement, new_participants):
+        receipts = self.get_receipts_list(settlement)
+
+        for receipt in receipts:
+            self.update_record(old_settlement=settlement, old_receipt=receipt, new_settlement=settlement,
+                               new_receipt=receipt, participants=new_participants)
+        return 1
 
     def delete_record(self, settlement, receipt):
         self.settlements[settlement].pop(receipt)
         self.save()
-
         return 1
 
     def delete_settlement(self, settlement):
@@ -102,7 +109,8 @@ class DataBase:
         return rec_amount
 
     def get_receipts_list(self, settlement):            # for specific settlement
-        return list(self.settlements[settlement].keys())
+        receipts_list = list(self.settlements[settlement].keys())
+        return receipts_list
 
     def get_settlement_participants(self, settlement):
         sett = self.settlements[settlement]
@@ -126,7 +134,7 @@ class DataBase:
             i +=1
         return record_data
 
-    def get_exp_split_matrix(self, settlement,receipt):
+    def get_exp_split_matrix(self, settlement, receipt):
         record = self.get_record_data(settlement, receipt)
         exp_matrix = record['exp_split_matrix']
         return exp_matrix

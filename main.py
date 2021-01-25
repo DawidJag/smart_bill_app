@@ -10,7 +10,7 @@ import os.path
 from os import listdir
 from os.path import dirname
 import webbrowser
-# from android.storage import primary_external_storage_path
+
 
 from kivy.app import App
 from kivy.lang import Builder
@@ -23,16 +23,16 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.recycleview import RecycleView
+from kivy.uix.recycleview.views import RecycleDataViewBehavior
 from kivy.uix.popup import Popup
 from kivy.core.window import Window
 from kivy.utils import platform
 from kivy.clock import Clock
+from kivy.core.window import Window
+# Window.size = (1080, 2340)
 
-# from kivy.uix.button import Button
 from kivy.uix.scrollview import ScrollView
 
-
-# from kivy.properties import NumericProperty
 
 
 class MainWindow(Screen):
@@ -74,13 +74,18 @@ class MainWindow(Screen):
         participants = db.get_settlement_participants(settlement)
         if participants:
             rows = 10
-            cols = len(participants.split(','))
+            labels = ['Items', 'Amounts'] + participants.split(',')
+            cols = len(labels)
+            labels = np.array(labels).reshape((1,-1))
+            print('labels: ' + str(labels))
+
             items = ['item ' + str(x) for x in range(1, rows + 1)]
             items = np.array(items).reshape((-1, 1))
             zeros = np.zeros((rows, 1))
-            checks = np.ones((rows, cols))
+            checks = np.ones((rows, cols-2))
             array = np.concatenate((items, zeros, checks), axis=1)
-            array_converted = str(array.tolist())
+            array2 = np.concatenate((labels, array), axis=0)
+            array_converted = str(array2.tolist())
             AddReceiptWindow.r_exp_split = array_converted
 
         AddReceiptWindow.s_name = settlement
@@ -98,6 +103,7 @@ class MainWindow(Screen):
 
     def youtubeBtn(self):
         webbrowser.open('https://youtu.be/KUo5YfdCatw')
+
 
 
 class DelSettConfWindow(Screen):
@@ -127,6 +133,124 @@ class DelRecConfWindow(Screen):
         app = App.get_running_app()
         screen_manager = app.root.ids['screen_manager']
         screen_manager.current = 'add_settl'
+
+class ParticipantsWindow(Screen):
+    part_list_window = BoxLayout()
+    s_name = ""
+    participants_names = ""
+
+    def __init__(self, **kwargs):
+        super(ParticipantsWindow, self).__init__(**kwargs)
+
+    def on_enter(self):
+        self.part_list_window.clear_widgets()
+        self.show_RV_participants()
+
+    def show_RV_participants(self):  # items
+        print('s_name: ' + self.s_name)
+        if self.s_name in db.get_settlements_list():
+            # self.participants_names = "'participant1', 'participant2'"
+            self.participants_names = db.get_settlement_participants(self.s_name)
+            print('participants: ' + self.participants_names)
+        else:
+            self.participants_names = "'participant1', 'participant2'"
+
+        self.participants_list = self.participants_names.split(',')
+
+        # input list to create recycle view with settlements
+        self.items = []
+        for name in self.participants_names.split(','):
+            temp_dict = {'col_1_user': name}
+            self.items.append(temp_dict)
+
+        # self.sett_list.bind(minimum_height=self.sett_list.setter('height'))
+        self.recycle_view = RV_participants(items=self.items, settlement=self.s_name)
+
+        self.part_list_window.add_widget(self.recycle_view)
+
+    def addToListBtn(self):
+        participants = db.get_settlement_participants(self.s_name).split(',')
+        no_of_part = len(participants)
+        new_user = "participant" + str(no_of_part + 1)
+
+        i = no_of_part + 1
+        while new_user in participants:
+            i += 1
+            new_user = "participant" + str(i)
+
+        participants.append(new_user)
+        db.update_participants(self.s_name, str(participants))
+        receipts = db.get_receipts_list(self.s_name)
+
+        for receipt in receipts:
+            # payments
+            payments = ast.literal_eval(db.get_record_data(self.s_name, receipt)['payments'])
+            payments[new_user] = 0
+
+            # expense split
+            exp_split = np.array(ast.literal_eval(db.get_record_data(self.s_name, receipt)['exp_split_matrix']))
+            new_user_col = np.zeros((exp_split.shape[0],1), dtype=object)
+            new_user_col[0] = new_user
+            exp_split = np.append(exp_split, new_user_col, axis=1)
+            exp_split = exp_split.tolist()
+
+            db.update_record(self.s_name, receipt, self.s_name, receipt, payments=str(payments),
+                             exp_split_matrix=str(exp_split))
+
+        self.part_list_window.clear_widgets()
+        self.show_RV_participants()
+
+    def cancelBtn(self):
+        print('participants sett: ' + self.s_name)
+        AddSettlementWindow.s_name = self.s_name
+        AddSettlementWindow.part_list = db.get_settlement_participants(self.s_name)
+
+    def saveBtn(self):
+        pass
+
+
+class DelUserConfWindow(Screen):
+    sett_name = ObjectProperty(None)
+    participant_name = ObjectProperty(None)
+    participants_list = []
+    s_name = ""
+    user_name = ""
+
+    def on_enter(self):
+        # self.sett_name.text = self.s_name
+        self.participant_name.text = self.user_name
+
+
+    def delUser(self):
+        self.new_participant_list = self.participants_list.copy()
+
+        if self.user_name in self.participants_list:
+            # updating participants in database
+            self.new_participant_list.remove(self.user_name)
+            db.update_participants(self.s_name, str(self.new_participant_list))
+
+            # updating payments and expense split in database
+            receipts = db.get_receipts_list(self.s_name)
+            for receipt in receipts:
+                # payments
+                payments = ast.literal_eval(db.get_record_data(self.s_name, receipt)['payments'])
+                payments.pop(self.user_name, 'not found')
+
+                # expense split
+                exp_split = np.array(ast.literal_eval(db.get_record_data(self.s_name, receipt)['exp_split_matrix']))
+                exp_split = np.delete(exp_split, np.where(exp_split[0,:] == self.user_name), axis=1)
+                exp_split = str(exp_split.tolist())
+
+                db.update_record(self.s_name, receipt, self.s_name, receipt, payments=str(payments),
+                                 exp_split_matrix=str(exp_split))
+
+            app = App.get_running_app()
+            screen_manager = app.root.ids['screen_manager']
+            screen_manager.current = 'participants'
+            AddSettlementWindow.part_list = db.get_settlement_participants(self.s_name)
+        else:
+            print('user doesn\'t exist')
+
 
 
 class UpdateSettConfWindow(Screen):
@@ -246,7 +370,8 @@ class AddSettlementWindow(Screen):
     def on_enter(self):
         app = App.get_running_app()
         app.root.ids.settl_name.text = self.s_name
-        self.particip_list.text = self.part_list  # string
+        # self.particip_list.text = self.part_list  # string
+        self.particip_list.text = self.part_list.replace(',', ', ')
         self.rec_list.clear_widgets()
         self.show_rec_RV()
         self.s_name_old = self.s_name
@@ -314,11 +439,12 @@ class AddSettlementWindow(Screen):
     def updateSett(self):
         receipts_list = db.get_receipts_list(self.s_name_old)
         AddSettlementWindow.s_name = self.settl_name.text
-        AddSettlementWindow.part_list = self.particip_list.text
-        for receipt in receipts_list:
-            db.update_record(old_settlement=self.s_name_old, new_settlement=self.s_name,
-                             participants=str(self.part_list.split(',')),
-                             old_receipt=receipt, new_receipt=receipt)
+        AddSettlementWindow.part_list = db.get_settlement_participants(self.s_name_old)                    #self.particip_list.text
+        if receipts_list:
+            for receipt in receipts_list:
+                db.update_record(old_settlement=self.s_name_old, new_settlement=self.s_name,
+                                 participants=str(self.part_list.split(',')),
+                                 old_receipt=receipt, new_receipt=receipt)
 
         if self.s_name_old != self.settl_name.text:
             db.delete_settlement(self.s_name_old)
@@ -336,22 +462,21 @@ class AddSettlementWindow(Screen):
         if self.particip_list.text:
             rows = 10
             cols = len(self.particip_list.text.split(','))
+            labels = ['Items', 'Amounts'] + self.particip_list.text.split(',')
+            labels = np.array(labels).reshape((1, -1))
+
             items = ['item ' + str(x) for x in range(1, rows + 1)]
             items = np.array(items).reshape((-1, 1))
             zeros = np.zeros((rows, 1))
             checks = np.ones((rows, cols))
             array = np.concatenate((items, zeros, checks), axis=1)
-            array_converted = str(array.tolist())
+            array2 = np.concatenate((labels, array), axis=0)
+            array_converted = str(array2.tolist())
             AddReceiptWindow.r_exp_split = array_converted
 
         AddReceiptWindow.prev_screen = "add_settl"
 
-    # def addSettleBtn(self):         # dodać zapisywanie, jeśli nic sie nie zmieniło !!!!!!!!!!!!!
-    #     if self.settl_name.text != "" and self.particip_list.text != "":
-    #         db.add_record(settlement=self.settl_name.text, participants=str(self.particip_list.text.split(',')))
-    #         self.reset()
-    #     else:
-    #         invalidForm()
+
 
     def addSettleBtn(self):
         # adding new settlement
@@ -374,9 +499,39 @@ class AddSettlementWindow(Screen):
         self.particip_list.text = ''
         self.settl_name.text = ''
 
+    def addPartBtn(self):
+        if self.settl_name.text in db.get_settlements_list():
+            self.s_name_old = self.settl_name.text
+            self.updateSett()
+            # self.s_name_old = self.settl_name.text
+        else:
+            db.add_record(self.settl_name.text, str(['participant1', 'participant2']),
+                          payments=str({'participant1': 0, 'participant2': 0}))
+        ParticipantsWindow.s_name = self.settl_name.text
+
+
+
     def on_focus(self, instance):
         if instance.focus:
             Clock.schedule_once(lambda dt: instance.select_all())
+        else:
+            # if jesli nie istnieje rozliczenie
+            if self.settl_name.text in db.get_settlements_list():
+                self.updateSett()
+                self.s_name_old = self.settl_name.text
+            else:
+                labels = ['Items', 'Amounts', 'participant1', 'participant2']
+                labels = np.array(labels).reshape((1, -1))
+                items = ['item ' + str(x) for x in range(1, 11)]  # fixed no. of rows => 10
+                items = np.array(items).reshape((-1, 1))
+                zeros = np.zeros((10, 1))
+                checks = np.ones((10, 2))
+                tmp_default_array = np.concatenate((items, zeros, checks), axis=1)
+                exp_split_matrix = np.concatenate((labels, tmp_default_array), axis=0)
+                exp_split_matrix = exp_split_matrix.tolist()
+
+                db.add_record(self.settl_name.text, str(['participant1', 'participant2']), receipt='default_name',
+                              payments=str({'participant1': 0, 'participant2': 0}), exp_split_matrix=str(exp_split_matrix))
 
 
 class AddReceiptWindow(Screen):
@@ -413,6 +568,7 @@ class AddReceiptWindow(Screen):
         self.remarks.text = self.r_remarks
         self.s_name_old = self.s_name  # saving old settlement name in separate variable
         self.r_name_old = self.r_name
+        # print(self.r_exp_split)
 
     def exp_split(self, screen_name):
         # add to db or update
@@ -429,23 +585,32 @@ class AddReceiptWindow(Screen):
         ExpSplitWindow.r_remarks = self.remarks.text
 
         rows = 10  # to be change to dynamic
-        labels = ast.literal_eval(self.part_list)
-        cols = len(labels)
+        cols = len(self.part_list.split(','))
+        # labels = ['Item', 'Amounts'] + ast.literal_eval(self.part_list)     # type: list      # @@@@@@@@@ sprawdzić czy trzeba zmienić labels
+        # cols = len(labels)
 
-        if not self.r_exp_split:  # self.r_exp_split => string
-            items = ['item ' + str(x) for x in range(1, rows + 1)]
-            items = np.array(items).reshape((-1, 1))
-            zeros = np.zeros((rows, 1))
-            checks = np.ones((rows, cols))
-            array = np.concatenate((items, zeros, checks), axis=1)
-            self.r_exp_split = str(array.tolist())
+        # !!!!!!!!! to jest chyba tutaj niepotrzebne
+        # if not self.r_exp_split:  # self.r_exp_split => string
+        #     # @@@@@@@@ tutaj dodać pierwszą linię z etykietami
+        #     items = ['item ' + str(x) for x in range(1, rows + 1)]
+        #     items = np.array(items).reshape((-1, 1))
+        #     zeros = np.zeros((rows, 1))
+        #     checks = np.ones((rows, cols))
+        #     array = np.concatenate((items, zeros, checks), axis=1)
+        #     print(array)
+        #     print('labels: ' + str(labels))
+        #     array2 = np.concatenate((labels, array), axis=1)
+        #     print(array2)
+        #     self.r_exp_split = str(array2.tolist())
+        # print(self.r_exp_split)
+        # print('type: ' + str(type(self.r_exp_split)))
 
         app = App.get_running_app()
         screen_manager = app.root.ids['screen_manager']
         screen = screen_manager.get_screen(screen_name)
 
         ExpSplitWindow.input_exp_matrix = self.r_exp_split
-        ExpSplitWindow.show_exp_split(screen, rows, cols, labels)
+        ExpSplitWindow.show_exp_split(screen, rows, cols)
 
     def payersBtn(self):
         try:
@@ -486,13 +651,19 @@ class AddReceiptWindow(Screen):
             self.reset()
 
     def dbAddRec(self):
-        if not self.r_exp_split:  # self.r_exp_split => string
+        if not self.r_exp_split:  # self.r_exp_split => string          @@@@@@ sprawdzić czy trzeba dodać labels
+            labels = ['Item', 'Amounts'] + ast.literal_eval(self.part_list)
+            labels = np.array(labels)
+            cols = len(labels)
+            rows = 10
+
             items = ['item ' + str(x) for x in range(1, rows + 1)]
             items = np.array(items).reshape((-1, 1))
             zeros = np.zeros((rows, 1))
             checks = np.ones((rows, cols))
             array = np.concatenate((items, zeros, checks), axis=1)
-            self.r_exp_split = str(array.tolist())
+            array2 = np.concatenate((labels, array), axis=0)
+            self.r_exp_split = str(array2.tolist())
 
         if self.amount.text != "" and self.rec_name.text != "":
             result = db.add_record(settlement=self.sett_name.text, participants=self.part_list,
@@ -539,7 +710,8 @@ class AddReceiptWindow(Screen):
 
 
 class PayersWindow(Screen):
-    pay_list = ObjectProperty(None)
+    # pay_list = ObjectProperty(None)
+    pay_list = BoxLayout()
     amount = ""
 
     def __init__(self, **kwargs):
@@ -580,6 +752,8 @@ class PayersWindow(Screen):
             pop.open()
 
 
+
+
 class ExpSplitWindow(Screen):
     s_name = ""
     r_name = ""
@@ -587,8 +761,6 @@ class ExpSplitWindow(Screen):
     r_date = ""
     r_category = ""
     r_remarks = ""
-    # grid = ObjectProperty(None)
-    # grid = GridLayout(cols=1)
     grid = FloatLayout()
     input_exp_matrix = ""  # string
 
@@ -596,9 +768,11 @@ class ExpSplitWindow(Screen):
         super(ExpSplitWindow, self).__init__(**kwargs)
         # self.grid.bind(minimum_height=self.grid.setter('height'))
 
-    def show_exp_split(self, rows, cols, labels):
-        self.expenses_grid = check_box_matrix(rows_no=rows, cols_no=cols, labels=labels,
-                                              exp_split_matrix=self.input_exp_matrix)
+    # def show_exp_split(self, rows, cols, labels):
+    def show_exp_split(self, rows, cols):
+        # self.expenses_grid = check_box_matrix(rows_no=rows, cols_no=cols, labels=labels,
+        #                                       exp_split_matrix=self.input_exp_matrix)
+        self.expenses_grid = check_box_matrix(rows_no=rows, cols_no=cols, exp_split_matrix=self.input_exp_matrix)
         self.grid.add_widget(self.expenses_grid)
 
     def OKBtn(self):
@@ -840,8 +1014,147 @@ class RV_rep(RecycleView):
 
 # ********************
 
+# ********************* Recycle view - participants
+class Row(BoxLayout, RecycleDataViewBehavior):          # based on: https://stackoverflow.com/questions/47630155/kivy-editable-recycleview
+    index = None
+    settlement = ""
+    users = []
 
 
+    def __init__(self, **kwargs):
+        super(Row, self).__init__(**kwargs)
+        app = App.get_running_app()
+        self.settlement = app.root.ids['participants'].s_name
+        self.users = db.get_settlement_participants(self.settlement).split(',')
+
+
+    def refresh_view_attrs(self, rv, index, data):
+        ''' Catch and handle the view changes '''
+        self.index = index
+        return super(Row, self).refresh_view_attrs(rv, index, data)
+
+    def on_touch_down(self, touch):
+        if super(Row, self).on_touch_down(touch):
+            return True
+
+        if self.collide_point(*touch.pos):
+            global rowIndex
+            rowIndex = self.index
+
+    # ta funkcja działa dla już istniejącego użytkownika, czyli powinna zamienić we wszystkich tabelach starą nazwę na nową bez zmiany innych danych
+    def saveUser(self, data, items):        # zmienić nazwę na UPDATE !!!!!!!!!!!!!!
+        self.items = items
+        user_old = items[self.index]['col_1_user']
+        user = self.ids['col_1_user'].text
+        self.users = db.get_settlement_participants(self.settlement).split(',')
+
+        if user in self.users:
+            print('user already exists')
+            self.ids['col_1_user'].text = user_old
+        elif user == user_old:
+            # self.users.append(user)
+            # print(self.users)
+            print('przypadek do wywalenia')
+        else:
+            self.users.append(user)
+            print('user old: ' + user_old)
+            self.users.remove(user_old)
+            items[self.index] = {'col_1_user': user}
+            print(items)
+            print('user updated')
+            print('self.users: ')
+            print(self.users)
+
+        db.update_participants(self.settlement, str(self.users))
+
+        # updating payments in database
+        receipts = db.get_receipts_list(self.settlement)
+        for receipt in receipts:
+            # payments
+            payments = ast.literal_eval(db.get_record_data(self.settlement, receipt)['payments'])
+            payments[user] = payments.pop(user_old, 'old user not in dict')
+
+            # expense split
+            exp_split = ast.literal_eval(db.get_record_data(self.settlement, receipt)['exp_split_matrix'])
+            exp_split[0] = [user if user_old == participant else participant for participant in exp_split[0]]
+
+            db.update_record(self.settlement, receipt, self.settlement, receipt, payments=str(payments), exp_split_matrix=str(exp_split))
+
+        AddSettlementWindow.part_list = db.get_settlement_participants(self.settlement)
+
+    def delBtn(self, data):
+        app = App.get_running_app()
+        app.root.ids['del_conf_user'].user_name = self.ids['col_1_user'].text
+        app.root.ids['del_conf_user'].s_name = self.settlement
+        app.root.ids['del_conf_user'].participants_list = self.users
+
+    # tutaj dopisać: usuwanie użytkownika ze wszystkich paragonów, ze wszystkich płatnosci, z exp_split po nazwie kolumny
+
+
+
+class RV_participants(RecycleView):
+
+    def __init__(self, items, settlement, **kwargs):
+        super(RV_participants, self).__init__(**kwargs)
+        self.items = items
+        self.settlement = settlement
+
+        self.data = [{'rv_user': str(x['col_1_user'])} for x in self.items]
+
+
+Builder.load_string('''
+<Row>:
+    id: row
+    #canvas.before:
+     #   Color:
+      #      rgba: 0.5, 0.5, 0.5, 1
+       # Rectangle:
+        #    size: self.size
+         #   pos: self.pos
+
+    orientation: 'horizontal'
+
+    rv_user: 'col_4_rec_text'
+    spacing: 3
+    padding: 1
+
+    TextInput:
+        id: col_1_user
+        text: root.rv_user
+
+    RectangleButton:
+        id: col_2_user
+        text: 'Update'
+        on_release:
+            root.saveUser(root.rv_user, root.parent.parent.items)
+          #  app.root.ids['screen_manager'].current = "add_receipt"
+    RoundedRightBottomButton:
+        id: col_3_user
+        text: 'Delete'
+        on_release:
+            root.delBtn(root.rv_user)
+            app.root.ids['screen_manager'].current = "del_conf_user"
+
+
+
+<RV_participants>:
+    id: rv
+    viewclass: 'Row'
+    scroll_type: ['bars', 'content']
+    scroll_wheel_distance: dp(114)
+    bar_width: dp(10)
+    RecycleGridLayout:
+        cols:1
+        default_size: None, dp(30) 
+        default_size_hint: 1, None
+        size_hint_y: None
+        height: self.minimum_height
+        #orientation: 'vertical'
+        spacing: dp(1)
+
+''')
+
+# *************************************************
 
 # class WindowManager(ScreenManager):
 #     pass
@@ -850,7 +1163,7 @@ class RV_rep(RecycleView):
 # kv = Builder.load_file("smart_bill.kv")
 
 # sm = WindowManager()
-db = DataBase("db.txt")
+
 
 # screens = [MainWindow(name="main"), PayersWindow(name='payers_list'), ExpSplitWindow(name="expense_split"),
 #            ReportsWindow(name='reports'), AddSettlementWindow(name='add_settl'), AddReceiptWindow(name='add_receipt'),
@@ -860,7 +1173,7 @@ db = DataBase("db.txt")
 #     sm.add_widget(screen)
 #
 # sm.current = "main"
-
+db = DataBase("db.txt")
 
 GUI = Builder.load_file("smart_bill_GUI.kv")
 
