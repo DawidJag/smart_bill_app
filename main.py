@@ -153,7 +153,7 @@ class ParticipantsWindow(Screen):
             self.participants_names = db.get_settlement_participants(self.s_name)
             print('participants: ' + self.participants_names)
         else:
-            self.participants_names = "'participant1', 'participant2'"
+            self.participants_names = "'name1', 'name2'"
 
         self.participants_list = self.participants_names.split(',')
 
@@ -171,12 +171,12 @@ class ParticipantsWindow(Screen):
     def addToListBtn(self):
         participants = db.get_settlement_participants(self.s_name).split(',')
         no_of_part = len(participants)
-        new_user = "participant" + str(no_of_part + 1)
+        new_user = "name" + str(no_of_part + 1)
 
         i = no_of_part + 1
         while new_user in participants:
             i += 1
-            new_user = "participant" + str(i)
+            new_user = "name" + str(i)
 
         participants.append(new_user)
         db.update_participants(self.s_name, str(participants))
@@ -201,7 +201,6 @@ class ParticipantsWindow(Screen):
         self.show_RV_participants()
 
     def cancelBtn(self):
-        print('participants sett: ' + self.s_name)
         AddSettlementWindow.s_name = self.s_name
         AddSettlementWindow.part_list = db.get_settlement_participants(self.s_name)
 
@@ -328,10 +327,6 @@ def settl_report(payments):  # payments => dict
     layout_popup.bind(minimum_height=layout_popup.setter('height'))
 
     for payer, transfers in payments.items():
-        # box = BoxLayout(orientation='vertical', spacing=10, size_hint_y='200dp')            # size_hint_y=Non           # box dla danego płacącego
-        # layout_popup.add_widget(box)
-        # box.add_widget(Label(text= str(payer) + ' should make below transfers:\n'))                 # etykieta kto płaci
-
         layout_popup.add_widget(Label(text=str(payer) + ' should make below transfers:'))
 
         for receiver, amount in transfers.items():
@@ -341,10 +336,8 @@ def settl_report(payments):  # payments => dict
             inside_box.add_widget(label_rec)
             inside_box.add_widget(label_amt)
 
-            # box.add_widget(inside_box)
             layout_popup.add_widget(inside_box)
 
-    # scroll_rep = ScrollView(size=(Window.width, Window.height), pos_hint={"x":0, "top":1})        # size_hint=(1, 0.8),
     scroll_rep = ScrollView(size_hint=(1, 0.8), pos_hint={"x": 0, "top": 1})
     scroll_rep.add_widget(layout_popup)
     box = FloatLayout(cols=1)
@@ -505,8 +498,8 @@ class AddSettlementWindow(Screen):
             self.updateSett()
             # self.s_name_old = self.settl_name.text
         else:
-            db.add_record(self.settl_name.text, str(['participant1', 'participant2']),
-                          payments=str({'participant1': 0, 'participant2': 0}))
+            db.add_record(self.settl_name.text, str(['name1', 'name2']),
+                          payments=str({'name1': 0, 'name2': 0}))
         ParticipantsWindow.s_name = self.settl_name.text
 
 
@@ -520,7 +513,7 @@ class AddSettlementWindow(Screen):
                 self.updateSett()
                 self.s_name_old = self.settl_name.text
             else:
-                labels = ['Items', 'Amounts', 'participant1', 'participant2']
+                labels = ['Items', 'Amounts', 'name1', 'name2']
                 labels = np.array(labels).reshape((1, -1))
                 items = ['item ' + str(x) for x in range(1, 11)]  # fixed no. of rows => 10
                 items = np.array(items).reshape((-1, 1))
@@ -530,8 +523,8 @@ class AddSettlementWindow(Screen):
                 exp_split_matrix = np.concatenate((labels, tmp_default_array), axis=0)
                 exp_split_matrix = exp_split_matrix.tolist()
 
-                db.add_record(self.settl_name.text, str(['participant1', 'participant2']), receipt='default_name',
-                              payments=str({'participant1': 0, 'participant2': 0}), exp_split_matrix=str(exp_split_matrix))
+                db.add_record(self.settl_name.text, str(['name1', 'name2']), receipt='default_name',
+                              payments=str({'name1': 0, 'name2': 0}), exp_split_matrix=str(exp_split_matrix))
 
 
 class AddReceiptWindow(Screen):
@@ -1088,9 +1081,6 @@ class Row(BoxLayout, RecycleDataViewBehavior):          # based on: https://stac
         app.root.ids['del_conf_user'].s_name = self.settlement
         app.root.ids['del_conf_user'].participants_list = self.users
 
-    # tutaj dopisać: usuwanie użytkownika ze wszystkich paragonów, ze wszystkich płatnosci, z exp_split po nazwie kolumny
-
-
 
 class RV_participants(RecycleView):
 
@@ -1153,36 +1143,16 @@ Builder.load_string('''
         spacing: dp(1)
 
 ''')
+# **************************************************
 
-# *************************************************
-
-# class WindowManager(ScreenManager):
-#     pass
-
-# !!!!!!!!!!!!!
-# kv = Builder.load_file("smart_bill.kv")
-
-# sm = WindowManager()
-
-
-# screens = [MainWindow(name="main"), PayersWindow(name='payers_list'), ExpSplitWindow(name="expense_split"),
-#            ReportsWindow(name='reports'), AddSettlementWindow(name='add_settl'), AddReceiptWindow(name='add_receipt'),
-#            DelSettConfWindow(name='del_conf_sett'), DelRecConfWindow(name='del_conf_rec')]
-#
-# for screen in screens:
-#     sm.add_widget(screen)
-#
-# sm.current = "main"
 db = DataBase("db.txt")
 
 GUI = Builder.load_file("smart_bill_GUI.kv")
 
 
 class smart_billApp(App):
-    # manager = ObjectProperty()
 
     def build(self):
-        # TO BE UNCOMMENTED BEFORE COMPILATION
         self.bind(on_start=self.post_build_init)
 
         if platform == 'android':
