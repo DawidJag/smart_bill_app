@@ -48,7 +48,7 @@ class payers_list(FloatLayout):
         self.result_dict = {}
 
         # creating payers list widget
-        self.popup_grid = GridLayout(pos_hint={"x": 0, "top": 1}, row_force_default=True, row_default_height=40)
+        self.popup_grid = GridLayout(pos_hint={"x": 0, "top": 1}, row_force_default=True, row_default_height='40dp')
         self.popup_grid.cols = self.cols_no
         self.add_widget(self.popup_grid)
         name_array = np.empty(shape=(self.rows_no, self.cols_no), dtype=object)

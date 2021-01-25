@@ -128,6 +128,196 @@ GridLayout:
                     on_release:
                         root.ids.main.youtubeBtn()
 
+
+
+        ReportsWindow:
+            canvas.before:
+                Color:
+                    rgba: 0.031, 0.792, 0.945, 0.73
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+
+            name: "reports"
+            id: reports
+            sett_list: sett_list_rep
+
+            FloatLayout:
+                cols: 1
+
+                Label:
+                    text: 'Reports'
+                    font_size: '36sp'
+                    pos_hint: {"x":0.1, "top":1}
+                    size_hint: 0.79, 0.2
+
+                BoxLayout:
+                    id: sett_list_rep
+                    pos_hint: {"x":0.1, "top":0.8}
+                    size_hint: 0.79, 0.65
+
+                RoundedButton:
+                    text: 'Back'
+                    font_size: '24sp'
+                    pos_hint: {"x":0.6, "top": 0.15}
+                    size_hint: 0.29, 0.09
+                    on_release:
+                        root.ids['screen_manager'].transition.direction = "right"
+                        app.root.ids['screen_manager'].current = "main"
+
+
+        AddSettlementWindow:
+            canvas.before:
+                Color:
+                    rgba: 0.031, 0.792, 0.945, 0.73
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+
+            name: 'add_settl'
+            id: add_settl
+
+            settl_name: settl_name
+            particip_list: particip_list
+            rec_list: rec_list
+
+            FloatLayout:
+                cols: 1
+                id: float_layout
+
+                Label:
+                    text: 'Add / Edit settlement'
+                    font_size: '36sp'
+                    pos_hint: {"x":0.1, "top":1}
+                    size_hint: 0.8, 0.2
+
+                FloatLayout:
+                    cols: 2
+
+                    Label:
+                        text: 'Name: *'
+                        pos_hint: {"x":0.1, "top":0.85}
+                        size_hint: 0.3, 0.05
+                        halign: 'right'
+                        valign: 'middle'
+                        text_size: self.size
+
+                    TextInput:
+                        id: settl_name
+                        hint_text: 'Type name here, like "settlement no.1"'
+                        multiline: False
+                        pos_hint: {"x":0.4, "top":0.85}
+                        size_hint: 0.5, 0.06
+                        on_focus:
+                            app.root.ids['add_settl'].on_focus(self)
+
+                        #on_text_validate:
+                         #   app.root.ids['add_settl'].updateSett()
+
+                    Label:
+                        text: 'Participants: *'
+                        pos_hint: {"x":0.1, "top":0.79}
+                        size_hint: 0.3, 0.05
+                        halign: 'right'
+                        valign: 'middle'
+                        text_size: self.size
+
+                    ScrollView:
+                        pos_hint: {"x":0.4, "top":0.79}
+                        size_hint: 0.5, 0.12
+
+                        Label:
+                            id: particip_list
+                            #hint_text: 'Type all people here, like "name1,name2,name3"'
+                            multiline: False
+                            size_hint: 1, None
+                            #size: self.texture_size
+                            text_size: self.width, None
+                            height: self.texture_size[1]
+                            #on_focus:
+                             #   app.root.ids['add_settl'].on_focus(self)
+
+                    #RoundedButton:
+                     #   text: 'Update'
+                      #  font_size: '20sp'
+                       # pos_hint: {"x":0.4, "top":0.72}
+                       # size_hint: 0.50, 0.05
+                       # on_release:
+                        #    app.root.ids['screen_manager'].current = "update_conf_sett"
+
+                    RoundedButton:
+                        text: 'Edit participants'
+                        font_size: '20sp'
+                        pos_hint: {"x":0.4, "top":0.66}
+                        size_hint: 0.50, 0.05
+                        on_release:
+                            app.root.ids['add_settl'].addPartBtn()
+                            app.root.ids['screen_manager'].current = "participants"
+
+                    Label:
+                        text: 'Receipt (opt.) '
+                        pos_hint: {"x":0.1, "top":0.59}
+                        size_hint: 0.3, 0.05
+                        halign: 'right'
+                        valign: 'middle'
+                        text_size: self.size
+
+                    Label:
+                        text: '* required'
+                        pos_hint: {"x":0.1, "top":0.53}
+                        size_hint: 0.3, 0.03
+                        halign: 'left'
+                        valign: 'middle'
+                        font_size: '12sp'
+                        text_size: self.size
+
+                    RoundedButton:
+                        text: 'Add'
+                        font_size: '20sp'
+                        pos_hint: {"x":0.4, "top":0.59}
+                        size_hint: 0.50, 0.05
+                        on_release:
+                            app.root.ids['add_settl'].addRecBtn()
+                            root.ids['screen_manager'].transition.direction = "left"
+                            app.root.ids['screen_manager'].current = "add_receipt"
+
+                    Label:
+                        text: 'Receipts:'
+                        halign: 'left'
+                        valign: 'middle'
+                        text_size: self.size
+                        font_size: '24sp'
+                        pos_hint: {"x":0.1, "top":0.50}
+                        size_hint: 0.8, 0.05
+
+
+                    BoxLayout:
+                        id: rec_list
+                        pos_hint: {"x":0.1, "top":0.45}
+                        size_hint: 0.8, 0.29
+
+
+                    RoundedLeftTopButton:
+                        text: 'Back'
+                        font_size: '24sp'
+                        pos_hint: {"x":0.1, "top":0.15}
+                        size_hint: 0.39, 0.09
+                        on_release:
+                            app.root.ids['add_settl'].cancelBtn()
+                            root.ids['screen_manager'].transition.direction = "right"
+                            app.root.ids['screen_manager'].current = "main"
+
+
+                    RoundedRightBottomButton:
+                        text: 'Save'
+                        font_size: '24sp'
+                        pos_hint: {"x":0.5, "top":0.15}
+                        size_hint: 0.39, 0.09
+                        on_release:
+                            app.root.ids['add_settl'].addSettleBtn()
+                            root.ids['screen_manager'].transition.direction = "left"
+                            app.root.ids['screen_manager'].current = "main"
+
         DelSettConfWindow:
             canvas.before:
                 Color:
@@ -156,6 +346,7 @@ GridLayout:
                     font_size: '24sp'
                     pos_hint: {"x":0.1, "top":0.8}
                     size_hint: 0.8, 0.15
+
 
                 RoundedLeftTopButton:
                     text: 'Confirm'
@@ -267,7 +458,7 @@ GridLayout:
                         root.ids['screen_manager'].transition.direction = "down"
                         app.root.ids['screen_manager'].current = "add_settl"
 
-        ReportsWindow:
+        DelUserConfWindow:
             canvas.before:
                 Color:
                     rgba: 0.031, 0.792, 0.945, 0.73
@@ -275,35 +466,47 @@ GridLayout:
                     pos: self.pos
                     size: self.size
 
-            name: "reports"
-            id: reports
-            sett_list: sett_list_rep
+            name: "del_conf_user"
+            id: del_conf_user
+            #sett_name: set3_name
+            participant_name: part_name
 
             FloatLayout:
                 cols: 1
 
                 Label:
-                    text: 'Reports'
-                    font_size: '36sp'
-                    pos_hint: {"x":0.1, "top":1}
-                    size_hint: 0.79, 0.2
+                    id: part_name
+                    pos_hint: {"x":0.1, "top":0.9}
+                    size_hint: 0.4, 0.15
 
-                BoxLayout:
-                    id: sett_list_rep
-                    pos_hint: {"x":0.1, "top":0.8}
-                    size_hint: 0.79, 0.65
 
-                RoundedButton:
-                    text: 'Back'
+                Label:
+                    text: 'Would you like to delete user?'
                     font_size: '24sp'
-                    pos_hint: {"x":0.6, "top": 0.15}
-                    size_hint: 0.29, 0.09
+                    pos_hint: {"x":0.1, "top":0.8}
+                    size_hint: 0.8, 0.15
+
+                RoundedLeftTopButton:
+                    text: 'Confirm'
+                    font_size: '24sp'
+                    pos_hint: {"x":0.1, "top":0.3}
+                    size_hint: 0.35, 0.15
                     on_release:
-                        root.ids['screen_manager'].transition.direction = "right"
-                        app.root.ids['screen_manager'].current = "main"
+                        #root.ids.add_settl.updateSett()
+                        root.ids.del_conf_user.delUser()
+                        root.ids['screen_manager'].transition.direction = "down"
+                        app.root.ids['screen_manager'].current = "participants"
 
 
-        AddSettlementWindow:
+                RoundedRightBottomButton:
+                    text: 'Cancel'
+                    font_size: '24sp'
+                    pos_hint: {"x":0.55, "top":0.3}
+                    size_hint: 0.35, 0.15
+                    on_release:
+                        app.root.ids['screen_manager'].current = 'add_settl'
+
+        ParticipantsWindow:
             canvas.before:
                 Color:
                     rgba: 0.031, 0.792, 0.945, 0.73
@@ -311,131 +514,42 @@ GridLayout:
                     pos: self.pos
                     size: self.size
 
-            name: 'add_settl'
-            id: add_settl
-
-            settl_name: settl_name
-            particip_list: particip_list
-            rec_list: rec_list
+            name: "participants"
+            id: participants
+            part_list_window: part_list_window
 
             FloatLayout:
                 cols: 1
-                id: float_layout
 
                 Label:
-                    text: 'Add / Edit settlement'
+                    text: 'Add / Edit participants'
                     font_size: '36sp'
                     pos_hint: {"x":0.1, "top":1}
                     size_hint: 0.8, 0.2
 
-                FloatLayout:
-                    cols: 2
+                BoxLayout:
+                    id: part_list_window
+                    pos_hint: {"x":0.1, "top":0.80}
+                    size_hint: 0.8, 0.53
 
-                    Label:
-                        text: 'Name: *'
-                        pos_hint: {"x":0.1, "top":0.85}
-                        size_hint: 0.3, 0.05
-                        halign: 'right'
-                        valign: 'middle'
-                        text_size: self.size
-
-                    TextInput:
-                        id: settl_name
-                        hint_text: 'Type name here, like "settlement no.1"'
-                        multiline: False
-                        pos_hint: {"x":0.4, "top":0.85}
-                        size_hint: 0.5, 0.06
-                        on_focus:
-                            app.root.ids['add_receipt'].on_focus(self)
-
-                    Label:
-                        text: 'Participants: *'
-                        pos_hint: {"x":0.1, "top":0.79}
-                        size_hint: 0.3, 0.05
-                        halign: 'right'
-                        valign: 'middle'
-                        text_size: self.size
-
-                    TextInput:
-                        id: particip_list
-                        hint_text: 'Type all people here, like "name1,name2,name3"'
-                        multiline: False
-                        pos_hint: {"x":0.4, "top":0.79}
-                        size_hint: 0.5, 0.06
-                        on_focus:
-                            app.root.ids['add_receipt'].on_focus(self)
-
-                    RoundedButton:
-                        text: 'Update'
-                        font_size: '20sp'
-                        pos_hint: {"x":0.4, "top":0.72}
-                        size_hint: 0.50, 0.05
-                        on_release:
-                            app.root.ids['screen_manager'].current = "update_conf_sett"
-
-                    Label:
-                        text: 'Receipt (opt.) '
-                        pos_hint: {"x":0.1, "top":0.64}
-                        size_hint: 0.3, 0.05
-                        halign: 'right'
-                        valign: 'middle'
-                        text_size: self.size
-
-                    Label:
-                        text: '* required'
-                        pos_hint: {"x":0.1, "top":0.58}
-                        size_hint: 0.3, 0.03
-                        halign: 'left'
-                        valign: 'middle'
-                        font_size: '12sp'
-                        text_size: self.size
-
-                    RoundedButton:
-                        text: 'Add'
-                        font_size: '20sp'
-                        pos_hint: {"x":0.4, "top":0.64}
-                        size_hint: 0.50, 0.05
-                        on_release:
-                            app.root.ids['add_settl'].addRecBtn()
-                            root.ids['screen_manager'].transition.direction = "left"
-                            app.root.ids['screen_manager'].current = "add_receipt"
-
-                    Label:
-                        text: 'Receipts:'
-                        halign: 'left'
-                        valign: 'middle'
-                        text_size: self.size
-                        font_size: '24sp'
-                        pos_hint: {"x":0.1, "top":0.55}
-                        size_hint: 0.8, 0.05
+                RoundedButton:
+                    text: 'Add participant'
+                    font_size: '18sp'
+                    pos_hint: {"x":0.5, "top":0.25}
+                    size_hint: 0.39, 0.05
+                    on_release:
+                        app.root.ids['participants'].addToListBtn()
 
 
-                    BoxLayout:
-                        id: rec_list
-                        pos_hint: {"x":0.1, "top":0.50}
-                        size_hint: 0.8, 0.34
-
-
-                    RoundedLeftTopButton:
-                        text: 'Back'
-                        font_size: '24sp'
-                        pos_hint: {"x":0.1, "top":0.15}
-                        size_hint: 0.39, 0.09
-                        on_release:
-                            app.root.ids['add_settl'].cancelBtn()
-                            root.ids['screen_manager'].transition.direction = "right"
-                            app.root.ids['screen_manager'].current = "main"
-
-
-                    RoundedRightBottomButton:
-                        text: 'Save'
-                        font_size: '24sp'
-                        pos_hint: {"x":0.5, "top":0.15}
-                        size_hint: 0.39, 0.09
-                        on_release:
-                            app.root.ids['add_settl'].addSettleBtn()
-                            root.ids['screen_manager'].transition.direction = "left"
-                            app.root.ids['screen_manager'].current = "main"
+                RoundedRightBottomButton:
+                    text: 'Back'
+                    font_size: '24sp'
+                    pos_hint: {"x":0.5, "top":0.15}
+                    size_hint: 0.39, 0.09
+                    on_release:
+                        app.root.ids['participants'].cancelBtn()
+                        root.ids['screen_manager'].transition.direction = "down"
+                        app.root.ids['screen_manager'].current = "add_settl"
 
 
         AddReceiptWindow:
@@ -660,10 +774,13 @@ GridLayout:
                     Label:
                         text: 'Amount'
 
-                BoxLayout:
-                    id: pay_list
+                ScrollView:
                     pos_hint: {"x":0.05, "top":0.75}
                     size_hint: 0.9, 0.58
+
+                    BoxLayout:
+                        id: pay_list
+                        size_hint: 1, None
 
                 RoundedLeftTopButton:
                     text: 'Back'

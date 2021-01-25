@@ -38,14 +38,17 @@ import ast
 class check_box_matrix(FloatLayout):
     # matrix = ObjectProperty(None)
 
-    def __init__(self, rows_no, cols_no, labels, exp_split_matrix, **kwargs):
+    def __init__(self, rows_no, cols_no, exp_split_matrix, **kwargs):
         # super function can be used to gain access
         # to inherited methods from a parent or sibling class
         # that has been overwritten in a class object.
         super(check_box_matrix, self).__init__(**kwargs)
         self.cols_no = cols_no + 2  # first two columns: item_name, amount
-        self.rows_no = rows_no
-        self.labels = ['Item', 'Amount'] + labels  # columns names
+        self.rows_no = rows_no + 1
+        # self.labels = ['Item', 'Amount'] + labels  # columns names          @@@@@ tutaj wczytać pierwszy wiersz nowej macierzy exp_split_matrix z db
+        self.labels = np.array(ast.literal_eval(exp_split_matrix))[0,:]
+        # print(type(self.labels))
+
         self.result_matrix = np.empty(shape=(self.rows_no, self.cols_no), dtype=object)   # matrix returned with values from all children widgets
 
         # preparation of input_matrix
@@ -55,11 +58,13 @@ class check_box_matrix(FloatLayout):
         checks = np.ones((10, cols_no))
         tmp_default_array = np.concatenate((items, zeros, checks), axis=1)
         if exp_split_matrix:
-            tmp_input_array = np.array(ast.literal_eval(exp_split_matrix))  # exp_split_matrix => string
+            tmp_input_array = np.array(ast.literal_eval(exp_split_matrix))[1:, :]  # exp_split_matrix => string
             row = tmp_input_array.shape[0]
             col = tmp_input_array.shape[1]
             tmp_default_array[0:row, 0:col] = tmp_input_array
         input_matrix = tmp_default_array
+        # print('input matrix')
+        # print(input_matrix)
 
         # creating checkbox matrix widget
         self.popup_grid = GridLayout(pos_hint={"x": 0, "top": 1})
@@ -78,31 +83,46 @@ class check_box_matrix(FloatLayout):
         temp_array = name_array.copy()
 
         for label in self.labels:
+            k=0
             # self.popup_grid.add_widget(Label(text=label, color=[0.031, 0.792, 0.945, 1]))
-            self.popup_grid.add_widget(Label(text=label, color=[1, 1, 1, 1], bold=True))
+            temp_array[0,k] = Label(text=label, color=[1, 1, 1, 1], bold=True)
+            self.popup_grid.add_widget(temp_array[0, k])
+            self.dict_checkbox_instances[temp_array[0, k]] = label
+            k += 1
+            # print('label: ' + label)
+            # print(type(label))
+            # print('label string: ' + str(label))
+            # print(type(str(label)))
+            # print(self.dict_checkbox_instances[temp_array[0, k]])
+        # print('dict_checkbox_instances: ' + str(self.dict_checkbox_instances))
 
-        for i in range(rows_no):
+        for i in range(1, self.rows_no):
 
             # temp_array[i, 0] = TextInput(text='item ' + str(i + 1))
-            temp_array[i, 0] = TextInput(text=input_matrix[i, 0])
+            # temp_array[i, 0] = TextInput(text=input_matrix[i, 0])
+            temp_array[i, 0] = TextInput(text=input_matrix[i-1, 0])
             self.popup_grid.add_widget(temp_array[i, 0])  # !!! change label text to something different
             temp_array[i, 0].bind(text=self.on_enter, focus=self.on_focus)
             self.dict_checkbox_instances[temp_array[i, 0]] = (temp_array[i, 0].text)
 
             # temp_array[i, 1] = TextInput(text='0', multiline=False, input_filter='float')
-            temp_array[i, 1] = TextInput(text=input_matrix[i, 1], multiline=False, input_filter='float', halign='right')
+            # temp_array[i, 1] = TextInput(text=input_matrix[i, 1], multiline=False, input_filter='float', halign='right')
+            temp_array[i, 1] = TextInput(text=input_matrix[i-1, 1], multiline=False, input_filter='float', halign='right')
             self.popup_grid.add_widget(temp_array[i, 1])  # !!! change label text to something different
             temp_array[i, 1].bind(text=self.on_enter, focus=self.on_focus)
             self.dict_checkbox_instances[temp_array[i, 1]] = (temp_array[i, 1].text)
 
             for j in range(2, self.cols_no):
-                checked = bool(input_matrix[i, j].astype(np.float))
+                # checked = bool(input_matrix[i, j].astype(np.float))
+                checked = bool(input_matrix[i-1, j].astype(np.float))
                 temp_array[i, j] = CheckBox(active=checked, color=[0, 0, 0, 0.6])
 
                 self.popup_grid.add_widget(temp_array[i, j])
                 temp_array[i, j].bind(active=self.on_checkbox_Active)
                 self.dict_checkbox_instances[temp_array[i, j]] = int(temp_array[i, j].active)
 
+        # print(self.dict_checkbox_instances)
+        # print(np.array(list(self.dict_checkbox_instances.values())).shape)
         self.result_matrix = np.array(list(self.dict_checkbox_instances.values())).reshape((self.rows_no, self.cols_no))
 
     def on_checkbox_Active(self, checkboxInstance, isActive):
