@@ -47,7 +47,7 @@ class check_box_matrix(FloatLayout):
         self.rows_no = rows_no + 1
         self.labels = np.array(ast.literal_eval(exp_split_matrix))[0,:]
 
-        self.result_matrix = np.empty(shape=(self.rows_no, self.cols_no), dtype=object)   # matrix returned with values from all children widgets
+        self.result_matrix = np.empty(shape=(self.rows_no, self.cols_no), dtype=object)   #  matrix returned with values from all children widgets
 
         # preparation of input_matrix
         items = ['item ' + str(x) for x in range(1, 11)]  # fixed no. of rows => 10

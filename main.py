@@ -327,10 +327,6 @@ def settl_report(payments):  # payments => dict
     layout_popup.bind(minimum_height=layout_popup.setter('height'))
 
     for payer, transfers in payments.items():
-        # box = BoxLayout(orientation='vertical', spacing=10, size_hint_y='200dp')            # size_hint_y=Non           # box dla danego płacącego
-        # layout_popup.add_widget(box)
-        # box.add_widget(Label(text= str(payer) + ' should make below transfers:\n'))                 # etykieta kto płaci
-
         layout_popup.add_widget(Label(text=str(payer) + ' should make below transfers:'))
 
         for receiver, amount in transfers.items():
@@ -340,10 +336,8 @@ def settl_report(payments):  # payments => dict
             inside_box.add_widget(label_rec)
             inside_box.add_widget(label_amt)
 
-            # box.add_widget(inside_box)
             layout_popup.add_widget(inside_box)
 
-    # scroll_rep = ScrollView(size=(Window.width, Window.height), pos_hint={"x":0, "top":1})        # size_hint=(1, 0.8),
     scroll_rep = ScrollView(size_hint=(1, 0.8), pos_hint={"x": 0, "top": 1})
     scroll_rep.add_widget(layout_popup)
     box = FloatLayout(cols=1)
