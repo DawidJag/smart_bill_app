@@ -774,13 +774,34 @@ GridLayout:
                     Label:
                         text: 'Amount'
 
+                #ScrollView:
+                 #   pos_hint: {"x":0.05, "top":0.75}
+                  #  size_hint: 0.9, 0.58
+
+                   # BoxLayout:
+                    #    id: pay_list
+                     #   size_hint: 1, None
+
                 ScrollView:
+                    #canvas.before:
+                     #   Color:
+                      #      rgba: 0.906,0.906,0.906,0.95
+                       # Rectangle:
+                        #    pos: self.pos
+                         #   size: self.width, self.height * 0.8
                     pos_hint: {"x":0.05, "top":0.75}
                     size_hint: 0.9, 0.58
-
+                    #size: self.size
                     BoxLayout:
                         id: pay_list
-                        size_hint: 1, None
+                        # cols: 1
+                        pos_hint: {"x":0, "top":1}
+                        size_hint: 1, 2
+                        #size_hint_x: None
+                        row_default_height: '500dp'
+                        row_force_default: True
+                        #col_default_width: '400dp'
+                        #col_force_default: True
 
                 RoundedLeftTopButton:
                     text: 'Back'
