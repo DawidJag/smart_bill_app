@@ -77,7 +77,6 @@ class MainWindow(Screen):
             labels = ['Items', 'Amounts'] + participants.split(',')
             cols = len(labels)
             labels = np.array(labels).reshape((1,-1))
-            print('labels: ' + str(labels))
 
             items = ['item ' + str(x) for x in range(1, rows + 1)]
             items = np.array(items).reshape((-1, 1))
@@ -579,24 +578,6 @@ class AddReceiptWindow(Screen):
 
         rows = 10  # to be change to dynamic
         cols = len(self.part_list.split(','))
-        # labels = ['Item', 'Amounts'] + ast.literal_eval(self.part_list)     # type: list      # @@@@@@@@@ sprawdzić czy trzeba zmienić labels
-        # cols = len(labels)
-
-        # !!!!!!!!! to jest chyba tutaj niepotrzebne
-        # if not self.r_exp_split:  # self.r_exp_split => string
-        #     # @@@@@@@@ tutaj dodać pierwszą linię z etykietami
-        #     items = ['item ' + str(x) for x in range(1, rows + 1)]
-        #     items = np.array(items).reshape((-1, 1))
-        #     zeros = np.zeros((rows, 1))
-        #     checks = np.ones((rows, cols))
-        #     array = np.concatenate((items, zeros, checks), axis=1)
-        #     print(array)
-        #     print('labels: ' + str(labels))
-        #     array2 = np.concatenate((labels, array), axis=1)
-        #     print(array2)
-        #     self.r_exp_split = str(array2.tolist())
-        # print(self.r_exp_split)
-        # print('type: ' + str(type(self.r_exp_split)))
 
         app = App.get_running_app()
         screen_manager = app.root.ids['screen_manager']
@@ -644,7 +625,7 @@ class AddReceiptWindow(Screen):
             self.reset()
 
     def dbAddRec(self):
-        if not self.r_exp_split:  # self.r_exp_split => string          @@@@@@ sprawdzić czy trzeba dodać labels
+        if not self.r_exp_split:  # self.r_exp_split => string
             labels = ['Item', 'Amounts'] + ast.literal_eval(self.part_list)
             labels = np.array(labels)
             cols = len(labels)
@@ -688,7 +669,7 @@ class AddReceiptWindow(Screen):
         else:
             invalidForm()
 
-    def reset(self):  # nie rozumiem dlaczego nie działa dobrze z 'self' zamiast 'AddReceiptWindow'
+    def reset(self):
         AddReceiptWindow.r_name = ""
         AddReceiptWindow.r_amount = ""
         AddReceiptWindow.r_date = ""
@@ -726,25 +707,20 @@ class PayersWindow(Screen):
 
         elif float(self.amount) > sum(self.p_list.result_dict.values()):
             missing_amount = round(float(self.amount) - sum(self.p_list.result_dict.values()), 2)
-            message = 'Invalid total amount, please correct.\n\nMissing payment of: ' + str(missing_amount) + ' PLN'
+            message = 'Invalid total amount, please correct.\n\nMissing payment of:\n\n ' + str(missing_amount) + ' PLN'
 
-            pop = Popup(title='Invalid Amount',
-                        content=Label(text=message, halign='center'),
-                        size_hint=(0.8, 0.4))
+            pop_content = PopContent(message=message)
+            pop = Popup(title='Invalid Amount', content=pop_content, size_hint=(0.8, 0.5))
             pop.open()
         else:
             surplus_amount = abs(round(float(self.amount) - sum(self.p_list.result_dict.values()), 2))
             message = 'Invalid total amount, please correct.\n\n ' \
-                      'Sum of amounts paid by all people is higher than total receipt amount by:\n\n ' + str(
-                surplus_amount) + ' PLN'
+                      'Sum of amounts paid by all people is higher than total receipt amount by:\n\n ' \
+                      + str(surplus_amount) + ' PLN'
 
-            label = Label(text=message, halign='center', text_size=(self.width, None))
-            label.texture_update()
-            label.texture_size = label.size
-            pop = Popup(title='Invalid Amount', content=label, size_hint=(0.8, 0.4))
+            pop_content = PopContent(message=message)
+            pop = Popup(title='Invalid Amount', content=pop_content, size_hint=(0.8, 0.5))
             pop.open()
-
-
 
 
 class ExpSplitWindow(Screen):
@@ -771,7 +747,7 @@ class ExpSplitWindow(Screen):
     def OKBtn(self):
         array_converted = str(self.expenses_grid.result_matrix.tolist())
         db.update_record(self.s_name, self.r_name, self.s_name, self.r_name,
-                         exp_split_matrix=array_converted)  # sprawdzić czy działa
+                         exp_split_matrix=array_converted)
         AddReceiptWindow.r_exp_split = array_converted
         AddReceiptWindow.s_name = self.s_name
         AddReceiptWindow.r_name = self.r_name
@@ -791,18 +767,23 @@ class ExpSplitWindow(Screen):
         AddReceiptWindow.r_remarks = self.r_remarks
         self.grid.clear_widgets()
 
+class PopContent(BoxLayout):
+    input_label = ObjectProperty()
+
+    def __init__(self, message, **kwargs):
+        super(PopContent, self).__init__(**kwargs)
+        self.input_label.text = message
+
 
 def invalidForm():
-    pop = Popup(title='Invalid Form',
-                content=Label(text='Please fill in all inputs with valid information.'),
-                size_hint=(0.8, 0.4))
+    pop_content = PopContent(message='Please fill in all inputs with valid information.')
+    pop = Popup(title='Invalid Form', content=pop_content, size_hint=(0.8, 0.4))
     pop.open()
 
 
 def invalidReceipt():
-    pop = Popup(title='Invalid Receipt',
-                content=Label(text='Receipt already exists. Please correct data.'),
-                size_hint=(0.8, 0.4))
+    pop_content = PopContent(message='Receipt already exists. Please correct data.')
+    pop = Popup(title='Invalid Receipt', content=pop_content, size_hint=(0.8, 0.4))
     pop.open()
 
 
