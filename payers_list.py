@@ -66,7 +66,8 @@ class payers_list(FloatLayout):
             self.popup_grid.add_widget(temp_array[i, 0])
             # temp_array[i, 0].bind(text=self.on_enter)
             self.dict_checkbox_instances[temp_array[i, 0]] = temp_array[i, 0].text
-            temp_array[i, 1] = TextInput(text=str(amount), multiline=False, input_filter='float', halign='right')
+            temp_array[i, 1] = TextInput(text=str(amount), multiline=False, input_filter='float', halign='right',
+                                         padding=['5dp', '5dp', '5dp', '5dp'])
             self.popup_grid.add_widget(temp_array[i, 1])
             temp_array[i, 1].bind(text=self.on_enter, focus=self.on_focus)
             self.dict_checkbox_instances[temp_array[i, 1]] = float(temp_array[i, 1].text)

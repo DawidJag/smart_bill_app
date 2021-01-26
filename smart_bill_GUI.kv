@@ -1,5 +1,20 @@
 #:import Clock kivy.clock.Clock
 
+<TextInput>:
+    padding: ['5dp','5dp','5dp','5dp']
+
+<PopContent>:
+    input_label: inside_text
+    Label:
+        id: inside_text
+        multiline: False
+        valign: 'middle'
+        halign: 'center'
+        text_size: self.size
+        padding: ['5dp','5dp']
+        size_hint: 1,1
+        pos_hint: {"x": 0.2, "top": 1}
+
 <RoundedButton@Button>:
     background_color: 0,0,0,0  # the last zero is the critical on, make invisible
     canvas.before:
@@ -228,12 +243,12 @@ GridLayout:
 
                         Label:
                             id: particip_list
-                            #hint_text: 'Type all people here, like "name1,name2,name3"'
                             multiline: False
                             size_hint: 1, None
                             #size: self.texture_size
                             text_size: self.width, None
                             height: self.texture_size[1]
+                            padding: ['5dp','5dp']
                             #on_focus:
                              #   app.root.ids['add_settl'].on_focus(self)
 
