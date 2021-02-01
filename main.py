@@ -146,13 +146,14 @@ class ParticipantsWindow(Screen):
         self.show_RV_participants()
 
     def show_RV_participants(self):  # items
-        print('s_name: ' + self.s_name)
+        # print('s_name: ' + self.s_name)
+
         if self.s_name in db.get_settlements_list():
             # self.participants_names = "'participant1', 'participant2'"
             self.participants_names = db.get_settlement_participants(self.s_name)
             print('participants: ' + self.participants_names)
         else:
-            self.participants_names = "'name1', 'name2'"
+            self.participants_names = "'#name1', '#name2'"
 
         self.participants_list = self.participants_names.split(',')
 
@@ -167,15 +168,17 @@ class ParticipantsWindow(Screen):
 
         self.part_list_window.add_widget(self.recycle_view)
 
+
     def addToListBtn(self):
         participants = db.get_settlement_participants(self.s_name).split(',')
         no_of_part = len(participants)
-        new_user = "name" + str(no_of_part + 1)
+
+        new_user = "#name" + str(no_of_part + 1)
 
         i = no_of_part + 1
         while new_user in participants:
             i += 1
-            new_user = "name" + str(i)
+            new_user = "_name" + str(i)
 
         participants.append(new_user)
         db.update_participants(self.s_name, str(participants))
@@ -203,8 +206,6 @@ class ParticipantsWindow(Screen):
         AddSettlementWindow.s_name = self.s_name
         AddSettlementWindow.part_list = db.get_settlement_participants(self.s_name)
 
-    def saveBtn(self):
-        pass
 
 
 class DelUserConfWindow(Screen):
@@ -326,12 +327,12 @@ def settl_report(payments):  # payments => dict
     layout_popup.bind(minimum_height=layout_popup.setter('height'))
 
     for payer, transfers in payments.items():
-        layout_popup.add_widget(Label(text=str(payer) + ' should make below transfers:'))
+        layout_popup.add_widget(Label(text=str(payer) + ' should make below transfers to:'))
 
         for receiver, amount in transfers.items():
             inside_box = GridLayout(cols=2, spacing=10)  # linia płatności
             label_rec = Label(text=receiver + ': ')
-            label_amt = Label(text=str(amount))
+            label_amt = Label(text=str(f'{amount:.2f}'))
             inside_box.add_widget(label_rec)
             inside_box.add_widget(label_amt)
 
@@ -373,7 +374,10 @@ class AddSettlementWindow(Screen):
     # ******************** Receipts list
     def show_rec_RV(self):  # items
         if self.s_name:
-            receipts = list(filter(None, db.get_receipts_list(self.s_name)))
+            # receipts = list(filter(None, db.get_receipts_list(self.s_name)))
+            receipts = db.get_receipts_list(self.s_name).copy()
+            if 'default_name' in receipts:
+                receipts.remove('default_name')
             receipts = sorted(receipts, key=str.lower)
             self.rec_names = receipts
         else:
@@ -497,8 +501,8 @@ class AddSettlementWindow(Screen):
             self.updateSett()
             # self.s_name_old = self.settl_name.text
         else:
-            db.add_record(self.settl_name.text, str(['name1', 'name2']),
-                          payments=str({'name1': 0, 'name2': 0}))
+            db.add_record(self.settl_name.text, str(['#name1', '#name2']),
+                          payments=str({'#name1': 0, '#name2': 0}))
         ParticipantsWindow.s_name = self.settl_name.text
 
 
@@ -512,7 +516,7 @@ class AddSettlementWindow(Screen):
                 self.updateSett()
                 self.s_name_old = self.settl_name.text
             else:
-                labels = ['Items', 'Amounts', 'name1', 'name2']
+                labels = ['Items', 'Amounts', '#name1', '#name2']
                 labels = np.array(labels).reshape((1, -1))
                 items = ['item ' + str(x) for x in range(1, 11)]  # fixed no. of rows => 10
                 items = np.array(items).reshape((-1, 1))
@@ -522,8 +526,8 @@ class AddSettlementWindow(Screen):
                 exp_split_matrix = np.concatenate((labels, tmp_default_array), axis=0)
                 exp_split_matrix = exp_split_matrix.tolist()
 
-                db.add_record(self.settl_name.text, str(['name1', 'name2']), receipt='default_name',
-                              payments=str({'name1': 0, 'name2': 0}), exp_split_matrix=str(exp_split_matrix))
+                db.add_record(self.settl_name.text, str(['#name1', '#name2']), receipt='default_name', amount=0,
+                              payments=str({'#name1': 0, '#name2': 0}), exp_split_matrix=str(exp_split_matrix))
 
 
 class AddReceiptWindow(Screen):
@@ -596,6 +600,8 @@ class AddReceiptWindow(Screen):
             r_payments = {}
             for participant in ast.literal_eval(self.part_list):
                 r_payments[participant] = 0
+
+        r_payments = {k: r_payments[k] for k in sorted(r_payments, key=lambda x: (x[0] is '#', x))}
 
         app = App.get_running_app()
         screen_manager = app.root.ids['screen_manager']
@@ -1031,13 +1037,13 @@ class Row(BoxLayout, RecycleDataViewBehavior):          # based on: https://stac
             print('przypadek do wywalenia')
         else:
             self.users.append(user)
-            print('user old: ' + user_old)
+            # print('user old: ' + user_old)
             self.users.remove(user_old)
             items[self.index] = {'col_1_user': user}
-            print(items)
-            print('user updated')
-            print('self.users: ')
-            print(self.users)
+            # print(items)
+            # print('user updated')
+            # print('self.users: ')
+            # print(self.users)
 
         db.update_participants(self.settlement, str(self.users))
 
@@ -1055,6 +1061,13 @@ class Row(BoxLayout, RecycleDataViewBehavior):          # based on: https://stac
             db.update_record(self.settlement, receipt, self.settlement, receipt, payments=str(payments), exp_split_matrix=str(exp_split))
 
         AddSettlementWindow.part_list = db.get_settlement_participants(self.settlement)
+
+    def on_focus(self, instance):
+        app = App.get_running_app()
+        if instance.focus:
+            Clock.schedule_once(lambda dt: instance.select_all())
+        else:
+            self.saveUser(app.root.ids['participants'].recycle_view.data, app.root.ids['participants'].recycle_view.items)
 
     def delBtn(self, data):
         app = App.get_running_app()
@@ -1085,20 +1098,20 @@ Builder.load_string('''
 
     orientation: 'horizontal'
 
-    rv_user: 'col_4_rec_text'
+    rv_user: 'col_1_user_text'
     spacing: 3
     padding: 1
 
     TextInput:
         id: col_1_user
         text: root.rv_user
+        on_focus: root.on_focus(self)
 
-    RectangleButton:
-        id: col_2_user
-        text: 'Update'
-        on_release:
-            root.saveUser(root.rv_user, root.parent.parent.items)
-          #  app.root.ids['screen_manager'].current = "add_receipt"
+    #RectangleButton:
+     #   id: col_2_user
+      #  text: 'Update'
+       # on_release:
+        #    root.saveUser(root.rv_user, root.parent.parent.items)
     RoundedRightBottomButton:
         id: col_3_user
         text: 'Delete'
@@ -1115,6 +1128,7 @@ Builder.load_string('''
     scroll_wheel_distance: dp(114)
     bar_width: dp(10)
     RecycleGridLayout:
+        id: rv_grid
         cols:1
         default_size: None, dp(30) 
         default_size_hint: 1, None

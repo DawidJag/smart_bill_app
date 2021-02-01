@@ -1,6 +1,7 @@
 # ****************************** Data Base ******************
 # created based on:   https://www.techwithtim.net/tutorials/kivy-tutorial/example-gui/
 import re
+import ast
 
 class DataBase:
     def __init__(self, file_name):
@@ -72,9 +73,12 @@ class DataBase:
     def update_participants(self, settlement, new_participants):
         receipts = self.get_receipts_list(settlement)
 
+        new_participants2 = ast.literal_eval(new_participants)
+        new_participants2 = sorted(new_participants2, key=lambda x: (x[0] is '#', x))       # tuple is sorted item by item: https://stackoverflow.com/questions/18411560/python-sort-list-with-none-at-the-end
+
         for receipt in receipts:
             self.update_record(old_settlement=settlement, old_receipt=receipt, new_settlement=settlement,
-                               new_receipt=receipt, participants=new_participants)
+                               new_receipt=receipt, participants=str(new_participants2))
         return 1
 
     def delete_record(self, settlement, receipt):
@@ -119,7 +123,7 @@ class DataBase:
 
         participants = sett[first_receipt][0]
         # participants = re.sub("[\[\]\']", '', participants)
-        participants = re.sub(r"([^a-zA-Z0-9^,])", '', participants)
+        participants = re.sub(r"([^a-zA-Z0-9^,^#])", '', participants)
         return participants                                         # string
 
     def get_record_data(self, settlement, receipt):

@@ -101,23 +101,22 @@ GridLayout:
                     size_hint: 0.8, 0.2
 
                 RoundedLeftTopButton:
-                    text: 'Reports'
-                    font_size: '24sp'
-                    pos_hint: {"x":0.1, "top":0.8}
-                    size_hint: 0.8, 0.09
-                    on_release:
-                        app.root.ids['screen_manager'].current = "reports"
-
-
-                RoundedRightBottomButton:
                     text: 'Add settlement'
                     font_size: '24sp'
-                    pos_hint: {"x":0.1, "top":0.7}
+                    pos_hint: {"x":0.1, "top":0.8}
                     size_hint: 0.8, 0.09
                     on_release:
                         root.ids['screen_manager'].transition.direction = "left"
                         root.ids.main.addSettBtn()
                         app.root.ids['screen_manager'].current = "add_settl"
+
+                RoundedRightBottomButton:
+                    text: 'Reports'
+                    font_size: '24sp'
+                    pos_hint: {"x":0.1, "top":0.7}
+                    size_hint: 0.8, 0.09
+                    on_release:
+                        app.root.ids['screen_manager'].current = "reports"
 
                 BackgroundLabel:
                     text: 'Settlements:'
@@ -519,7 +518,7 @@ GridLayout:
                     pos_hint: {"x":0.55, "top":0.3}
                     size_hint: 0.35, 0.15
                     on_release:
-                        app.root.ids['screen_manager'].current = 'add_settl'
+                        app.root.ids['screen_manager'].current = 'participants'
 
         ParticipantsWindow:
             canvas.before:
