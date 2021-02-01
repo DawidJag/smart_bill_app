@@ -64,6 +64,9 @@ class Settlement():
                 else:
                     payments[payer].update({receiver: abs(round(negative[payer], 2))})
 
+                if abs(payments[payer][receiver]) == 0:
+                    payments[payer].pop(receiver)
+
         return payments
 
 
