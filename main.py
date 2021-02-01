@@ -151,7 +151,7 @@ class ParticipantsWindow(Screen):
         if self.s_name in db.get_settlements_list():
             # self.participants_names = "'participant1', 'participant2'"
             self.participants_names = db.get_settlement_participants(self.s_name)
-            print('participants: ' + self.participants_names)
+            # print('participants: ' + self.participants_names)
         else:
             self.participants_names = "'#name1', '#name2'"
 
@@ -178,7 +178,7 @@ class ParticipantsWindow(Screen):
         i = no_of_part + 1
         while new_user in participants:
             i += 1
-            new_user = "_name" + str(i)
+            new_user = "#name" + str(i)
 
         participants.append(new_user)
         db.update_participants(self.s_name, str(participants))
@@ -439,7 +439,7 @@ class AddSettlementWindow(Screen):
         if receipts_list:
             for receipt in receipts_list:
                 db.update_record(old_settlement=self.s_name_old, new_settlement=self.s_name,
-                                 participants=str(self.part_list.split(',')),
+                                 participants=str(self.part_list.replace(" ", "").split(',')),
                                  old_receipt=receipt, new_receipt=receipt)
 
         if self.s_name_old != self.settl_name.text:
@@ -451,14 +451,14 @@ class AddSettlementWindow(Screen):
 
     def addRecBtn(self):
         AddReceiptWindow.s_name = self.settl_name.text
-        AddReceiptWindow.part_list = str(self.particip_list.text.split(','))
+        AddReceiptWindow.part_list = str(self.particip_list.text.replace(" ", "").split(','))
         AddSettlementWindow.s_name = self.settl_name.text
         AddSettlementWindow.part_list = self.particip_list.text
 
         if self.particip_list.text:
             rows = 10
             cols = len(self.particip_list.text.split(','))
-            labels = ['Items', 'Amounts'] + self.particip_list.text.split(',')
+            labels = ['Items', 'Amounts'] + self.particip_list.text.replace(" ", "").split(',')
             labels = np.array(labels).reshape((1, -1))
 
             items = ['item ' + str(x) for x in range(1, rows + 1)]
@@ -478,12 +478,12 @@ class AddSettlementWindow(Screen):
         # adding new settlement
         if (self.s_name_old == "" and self.part_list_old == ""):
             if self.settl_name.text != "" and self.particip_list.text != "":
-                db.add_record(settlement=self.settl_name.text, participants=str(self.particip_list.text.split(',')))
+                db.add_record(settlement=self.settl_name.text, participants=str(self.particip_list.text.replace(" ", "").split(',')))
                 self.reset()
             else:
                 invalidForm()
         # saving after change of sett. name or participants list
-        elif self.s_name_old != self.settl_name.text or self.part_list_old != self.particip_list.text:
+        elif self.s_name_old != self.settl_name.text or self.part_list_old != self.particip_list.text.replace(" ", ""):
             self.updateSett()
         else:
             pass
@@ -526,7 +526,7 @@ class AddSettlementWindow(Screen):
                 exp_split_matrix = np.concatenate((labels, tmp_default_array), axis=0)
                 exp_split_matrix = exp_split_matrix.tolist()
 
-                db.add_record(self.settl_name.text, str(['#name1', '#name2']), receipt='default_name', amount=0,
+                db.add_record(self.settl_name.text, str(['#name1', '#name2']), receipt='default_name', amount='0',
                               payments=str({'#name1': 0, '#name2': 0}), exp_split_matrix=str(exp_split_matrix))
 
 
@@ -598,8 +598,8 @@ class AddReceiptWindow(Screen):
                 r_payments = self.r_payments_tmp
         except:
             r_payments = {}
-            for participant in ast.literal_eval(self.part_list):
-                r_payments[participant] = 0
+            for participant in ast.literal_eval(self.part_list.replace(" ", "")):
+                r_payments[participant.strip(" ")] = 0
 
         r_payments = {k: r_payments[k] for k in sorted(r_payments, key=lambda x: (x[0] is '#', x))}
 
@@ -632,7 +632,7 @@ class AddReceiptWindow(Screen):
 
     def dbAddRec(self):
         if not self.r_exp_split:  # self.r_exp_split => string
-            labels = ['Item', 'Amounts'] + ast.literal_eval(self.part_list)
+            labels = ['Item', 'Amounts'] + ast.literal_eval(self.part_list.replace(" ", ""))
             labels = np.array(labels)
             cols = len(labels)
             rows = 10
@@ -646,7 +646,7 @@ class AddReceiptWindow(Screen):
             self.r_exp_split = str(array2.tolist())
 
         if self.amount.text != "" and self.rec_name.text != "":
-            result = db.add_record(settlement=self.sett_name.text, participants=self.part_list,
+            result = db.add_record(settlement=self.sett_name.text, participants=self.part_list.replace(" ", ""),
                                    receipt=self.rec_name.text,
                                    amount=self.amount.text, date=self.date.text, category=self.category.text,
                                    remarks=self.remarks.text,
@@ -665,7 +665,7 @@ class AddReceiptWindow(Screen):
         if self.amount.text != "" and self.rec_name.text != "":
             db.update_record(old_settlement=self.s_name_old, old_receipt=self.r_name_old,
                              new_settlement=self.sett_name.text,
-                             new_receipt=self.rec_name.text, participants=self.part_list, amount=self.amount.text,
+                             new_receipt=self.rec_name.text, participants=self.part_list.replace(" ", ""), amount=self.amount.text,
                              date=self.date.text, category=self.category.text, remarks=self.remarks.text,
                              payments=str(self.r_payments), exp_split_matrix=self.r_exp_split)
             # self.reset()
@@ -697,6 +697,7 @@ class PayersWindow(Screen):
     def __init__(self, **kwargs):
         super(PayersWindow, self).__init__(**kwargs)
         # self.pay_list.bind(minimum_height=self.pay_list.setter('height'))
+
 
     def show_pay_list(self, payments):
         self.p_list = payers_list(payments=payments)
@@ -743,8 +744,14 @@ class ExpSplitWindow(Screen):
         super(ExpSplitWindow, self).__init__(**kwargs)
         # self.grid.bind(minimum_height=self.grid.setter('height'))
 
+
     # def show_exp_split(self, rows, cols, labels):
     def show_exp_split(self, rows, cols):
+        # tmp_matrix = np.array(ast.literal_eval(self.input_exp_matrix))
+        # tmp_checkbox = tmp_matrix[:,2:]
+        # new = tmp_checkbox[:, tmp_checkbox[0].argsort()]
+        # print(new)
+
         # self.expenses_grid = check_box_matrix(rows_no=rows, cols_no=cols, labels=labels,
         #                                       exp_split_matrix=self.input_exp_matrix)
         self.expenses_grid = check_box_matrix(rows_no=rows, cols_no=cols, exp_split_matrix=self.input_exp_matrix)
