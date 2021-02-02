@@ -33,7 +33,7 @@ class DataBase:
                 self.save()
                 return 1
             else:
-                print("Receipt exists already")
+                # print("Receipt exists already")
                 return -1
         else:
             self.settlements[settlement.strip()] = {

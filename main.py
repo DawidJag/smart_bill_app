@@ -778,6 +778,7 @@ class ExpSplitWindow(Screen):
         AddReceiptWindow.r_date = self.r_date
         AddReceiptWindow.r_category = self.r_category
         AddReceiptWindow.r_remarks = self.r_remarks
+        AddReceiptWindow.editPressed = 1
         self.grid.clear_widgets()
 
 class PopContent(BoxLayout):
