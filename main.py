@@ -101,7 +101,7 @@ class MainWindow(Screen):
         DelSettConfWindow.prev_screen = "main"
 
     def youtubeBtn(self):
-        webbrowser.open('https://youtu.be/KUo5YfdCatw')
+        webbrowser.open('https://youtu.be/e3B2hF2Hp44')
 
 
 
