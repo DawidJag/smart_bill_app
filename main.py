@@ -747,29 +747,31 @@ class ExpSplitWindow(Screen):
 
     # def show_exp_split(self, rows, cols, labels):
     def show_exp_split(self, rows, cols):
-        # tmp_matrix = np.array(ast.literal_eval(self.input_exp_matrix))
-        # tmp_checkbox = tmp_matrix[:,2:]
-        # new = tmp_checkbox[:, tmp_checkbox[0].argsort()]
-        # print(new)
-
         # self.expenses_grid = check_box_matrix(rows_no=rows, cols_no=cols, labels=labels,
         #                                       exp_split_matrix=self.input_exp_matrix)
         self.expenses_grid = check_box_matrix(rows_no=rows, cols_no=cols, exp_split_matrix=self.input_exp_matrix)
         self.grid.add_widget(self.expenses_grid)
 
     def OKBtn(self):
-        array_converted = str(self.expenses_grid.result_matrix.tolist())
-        db.update_record(self.s_name, self.r_name, self.s_name, self.r_name,
-                         exp_split_matrix=array_converted)
-        AddReceiptWindow.r_exp_split = array_converted
-        AddReceiptWindow.s_name = self.s_name
-        AddReceiptWindow.r_name = self.r_name
-        AddReceiptWindow.r_amount = self.r_amount
-        AddReceiptWindow.r_date = self.r_date
-        AddReceiptWindow.r_category = self.r_category
-        AddReceiptWindow.r_remarks = self.r_remarks
-        AddReceiptWindow.editPressed = 1
-        self.grid.clear_widgets()
+        sum_of_exp_split = self.expenses_grid.result_matrix[1:, 1].astype(float).sum()
+
+        if sum_of_exp_split <= float(self.r_amount):
+            array_converted = str(self.expenses_grid.result_matrix.tolist())
+            db.update_record(self.s_name, self.r_name, self.s_name, self.r_name, exp_split_matrix=array_converted)
+            AddReceiptWindow.r_exp_split = array_converted
+            AddReceiptWindow.s_name = self.s_name
+            AddReceiptWindow.r_name = self.r_name
+            AddReceiptWindow.r_amount = self.r_amount
+            AddReceiptWindow.r_date = self.r_date
+            AddReceiptWindow.r_category = self.r_category
+            AddReceiptWindow.r_remarks = self.r_remarks
+            AddReceiptWindow.editPressed = 1
+            self.grid.clear_widgets()
+            app = App.get_running_app()
+            screen_manager = app.root.ids['screen_manager']
+            screen_manager.current = 'add_receipt'
+        else:
+            invalidExpSplit()
 
     def CancelBtn(self):
         AddReceiptWindow.s_name = self.s_name
@@ -798,6 +800,11 @@ def invalidForm():
 def invalidReceipt():
     pop_content = PopContent(message='Receipt already exists. Please correct data.')
     pop = Popup(title='Invalid Receipt', content=pop_content, size_hint=(0.8, 0.4))
+    pop.open()
+
+def invalidExpSplit():
+    pop_content = PopContent(message='Sum of all entered expenses exceeds total amount for this receipt. Please correct data.')
+    pop = Popup(title='Invalid expenses split', content=pop_content, size_hint=(0.8, 0.4))
     pop.open()
 
 
